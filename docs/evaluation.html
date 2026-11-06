@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Evaluation · AgriManager</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+<script>(function () { try { var t = localStorage.getItem('agri-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="assets/style.css?v=20261025g" />
+</head>
+<body>
+<header class="top">
+  <button class="hbtn menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="index.html"><img class="logo" src="assets/logo-icon.svg" alt="" /> <span class="wm"><span class="wm-agri">Agri</span><span class="wm-mgr">Manager</span></span> <span class="sep">/</span> <span class="doctag">Docs</span></a>
+  <div class="spacer"></div>
+  <a class="hlink" id="siteLink" href="../">Website</a>
+  <a class="hlink" id="repoLink" href="https://github.com/AgriManager-Framework/AgriManager" target="_blank" rel="noopener">GitHub</a>
+  <button class="hbtn" id="themeBtn" aria-label="Toggle light or dark theme"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+</header>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="wrap">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <h1>Evaluation</h1>
+    <p class="subtitle">Score a checkpoint, your own model, a scripted reference or an NN baseline on the held-out test suite.</p>
+
+    <h2 id="protocol">Protocol<a class="ah" href="#protocol">#</a></h2>
+    <p>Every number in the paper follows these rules. Follow them to get comparable numbers.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Rule</th><th>Detail</th></tr>
+        <tr><td>Frozen test suite</td><td>score on the <a href="test-suite.html">held-out test suite</a>; no training, checkpoint selection, prompt tuning or decoding change uses its scenarios</td></tr>
+        <tr><td>Terminal checkpoint</td><td>score the last checkpoint of each run (the stop step for a run that stopped early), with no selection on validation</td></tr>
+        <tr><td>Training response format</td><td>a think-trained checkpoint is scored in think format and a no-think one in no-think format; the evaluator reads the format from the checkpoint and asserts it</td></tr>
+        <tr><td>Greedy decoding</td><td><code>runtime.temperature=0</code>, one pass (<code>runtime.num_trials=1</code>)</td></tr>
+        <tr><td>No turn cap</td><td>leave <code>runtime.max_turns</code> unset for any reported run</td></tr>
+        <tr><td>Three seeds</td><td>report mean ± SD over three training seeds per arm, and differences between arms in propagated SD</td></tr>
+        <tr><td>Raw and references</td><td>report the raw return with both reference returns and the gap; normalize only where the gap is usable (<a href="benchmark.html#metric">Benchmark</a>)</td></tr>
+      </table>
+    </div>
+
+    <h2 id="checkpoint">Score a released checkpoint<a class="ah" href="#checkpoint">#</a></h2>
+    <p><code>entrypoints/eval/e5_evaluate_checkpoint.sh</code> scores one checkpoint revision on every suite group of a
+       setting and writes one result bundle. It needs one CUDA GPU and <code>install.sh --gpu</code>.</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">bash</span> entrypoints/eval/e5_evaluate_checkpoint.sh <span class="k">\</span>
+  <span class="k">--checkpoint-repo</span> AgriManager-Framework/schema-t32-qwen-think-r2 <span class="k">\</span>
+  <span class="k">--revision</span> step-800 <span class="k">\</span>
+  <span class="k">--suite-repo</span> AgriManager-Framework/agrimanager-test-suite <span class="k">\</span>
+  <span class="k">--results-repo</span> &lt;your-user&gt;/&lt;results-dataset&gt; <span class="k">\</span>
+  <span class="k">--tier</span> t32 <span class="k">\</span>
+  <span class="k">--no-upload</span></pre>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Argument</th><th>Meaning</th></tr>
+        <tr><td><code>--checkpoint-repo</code>, <code>--revision</code></td><td>Hugging Face model repository and branch <code>step-N</code>; the terminal revision is the highest N (<a href="models-data.html">Models and data</a>)</td></tr>
+        <tr><td><code>--checkpoint-dir</code></td><td>score weights already on disk (used for the untrained model)</td></tr>
+        <tr><td><code>--suite-repo</code></td><td>test-suite dataset repository (required); with <code>--suite-dir</code> it only names the suite in the bundle</td></tr>
+        <tr><td><code>--suite-dir</code></td><td>score suites already on disk (a directory holding the suite-group folders)</td></tr>
+        <tr><td><code>--results-repo</code></td><td>results dataset for the upload (required, also with <code>--no-upload</code>, where it is unused)</td></tr>
+        <tr><td><code>--tier</code></td><td><code>t11</code>, <code>t11_chickpea</code>, <code>t12</code>, <code>t13</code>, <code>t21</code>, <code>t22</code>, <code>t23</code>, <code>t31</code>, <code>t32</code></td></tr>
+        <tr><td><code>--suite-group</code></td><td>override the setting's groups (repeatable), for example to score a cross-simulator specialist on the unified-policy suites</td></tr>
+        <tr><td><code>--require-think</code>, <code>--think-tag</code></td><td>set the response format by hand, for checkpoints whose manifest does not record it</td></tr>
+        <tr><td><code>--max-samples N</code></td><td>score the first N rows of each split, for a pipeline check</td></tr>
+        <tr><td><code>--no-upload</code></td><td>keep the bundle local, in <code>&lt;work-dir&gt;/bundle</code> (<code>--work-dir</code>, default <code>./.e5_work</code>); without it, <code>HF_TOKEN</code> is required</td></tr>
+      </table>
+    </div>
+    <p>The bundle holds per-scenario outputs, the metrics of every split, any failures, the applied environment
+       overrides, and <code>eval_manifest.json</code>, which ties every number to the checkpoint and suite revisions
+       that produced it.</p>
+    <p>WOFOST suites read weather from a public weather pool, and the evaluators download the pool the first time a
+       suite needs it: the maize pool (0.25 GB) for Tier 2 and the WOFOST parts of Tier 3, the 20-crop pool (17.6 GB)
+       for weather-regime and crop-variety. The rebuilt Cycles suites are scored with
+       <code>--suite-group</code>; see <a href="test-suite.html#get">Held-out test suite</a>.
+       <code>results/scoring_manifest.tsv</code> lists every revision scored for the paper with its evaluator
+       arguments.</p>
+    <p><b>The untrained model</b> is scored the same way: pass the base model directory with
+       <code>--checkpoint-dir</code> (directories made by <code>entrypoints/tools/prepare_untrained_base.py</code>) and set the format with <code>--require-think True --think-tag tool_call</code>
+       (or <code>--require-think False</code>).</p>
+
+    <h2 id="own-model">Score your own model<a class="ah" href="#own-model">#</a></h2>
+    <p>Any model served through the model interface can be scored on a suite split with the generic evaluator.
+       Apply the response format with environment overrides and assert it:</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">bash</span> entrypoints/eval/eval.sh <span class="k">\</span>
+  data.inference_file=&lt;suite_dir&gt;/&lt;suite&gt;/&lt;split&gt;.parquet <span class="k">\</span>
+  model.config=agrimanager/model_interface/configs/vllm_offline/default.yaml <span class="k">\</span>
+  model.path=&lt;hf_repo_or_local_dir&gt; <span class="k">\</span>
+  +data.env_config_overrides.require_think=True <span class="k">\</span>
+  +data.env_config_overrides.think_tag=tool_call <span class="k">\</span>
+  +data.assert_env_config.require_think=True <span class="k">\</span>
+  output.dir=&lt;out_dir&gt;</pre>
+    </div>
+    <p>Hosted models work through <code>--config-name openrouter</code> and an <code>OPENROUTER_API_KEY</code>; use a
+       fixed model slug for comparable numbers, and report results on whole splits.</p>
+
+    <h2 id="references">Scripted references<a class="ah" href="#references">#</a></h2>
+    <p><code>OUT_ROOT=&lt;dir&gt; bash experiments/rebuttal_confirmatory_eval/run_e4_anchors.sh</code> scores
+       no-action, the paper's scripted agronomic reference and the current one on every split, on a CPU (DSSAT splits
+       need the <a href="dssat.html">DSSAT runtime</a>). The code has changed since the submitted figures, so the
+       paper's reference differs by simulator. The paper-era policies are kept in
+       <code>experiments/rebuttal_confirmatory_eval/paper_references/</code>, and the script copies them with their
+       sha256 next to the results.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Simulator</th><th>Reference used in the paper</th></tr>
+        <tr><td>WOFOST</td><td>the earlier per-crop policy, <code>paper_references/extension_guideline_rollout_paper.py</code></td></tr>
+        <tr><td>Cycles crop growth</td><td>the first implementation, <code>paper_references/random_rollout_paper_sim.py</code>, run by <code>paper_sim_anchor_rollout.py</code></td></tr>
+        <tr><td>DSSAT</td><td>a code reconstruction of the fixed schedule, in <code>paper_sim_anchor_rollout.py</code></td></tr>
+        <tr><td>Cycles crop planning</td><td>the current module (<code>ag_heuristic</code>)</td></tr>
+      </table>
+    </div>
+    <p>One scripted policy on one split:</p>
+    <div class="code">
+      <div class="code-head"><span>bash · CPU</span><button class="copy">Copy</button></div>
+<pre><span class="o">bash</span> entrypoints/eval/baseline_eval.sh <span class="k">--config-name</span> no_action <span class="k">\</span>
+  data.inference_file=&lt;split.parquet&gt; output.dir=&lt;out_dir&gt; wandb.enabled=false</pre>
+    </div>
+
+    <h2 id="nn">NN baselines<a class="ah" href="#nn">#</a></h2>
+    <p>NN baselines run on the <code>_nn</code> suites, on a CPU. The paper's scripts:</p>
+    <ul>
+      <li><code>experiments/t1_1_weather_regime_shift/run_eval_t11_{potato,chickpea}_nn_e4.sh</code></li>
+      <li><code>experiments/t1_2_cross_crop_trait_shift/run_eval_t12_nn_e4.sh</code></li>
+      <li><code>experiments/t1_3_cycles_gym_price_regime/run_eval_t13_nn_e4.sh</code></li>
+      <li><code>experiments/t2_2_action_menu_shift/run_eval_t22_nn_{mask,target}_e4.sh</code></li>
+    </ul>
+    <p>One NN checkpoint on one split:
+       <code>bash entrypoints/eval/nn_eval.sh --config-name nn data.inference_file=&lt;split&gt; agent.path=&lt;agent.zip&gt; output.dir=&lt;out&gt;</code>.</p>
+
+    <h2 id="hardware">Across hardware<a class="ah" href="#hardware">#</a></h2>
+    <p>Greedy decoding with vLLM is close to deterministic: where two tokens are nearly tied, a different GPU model,
+       driver or even a rerun on the same GPU can flip the choice, and that episode then diverges. Re-scoring the
+       paper's terminal checkpoints on the WOFOST and DSSAT targets in a later pass left 68 of 159 trained no-think
+       seed means bit-identical; trained seed means moved by at most 0.16 (no-think) and 0.29 (think), at most 1.7
+       scenario-level standard errors, and the untrained model's by up to 0.62 (paper, Appendix D). A DSSAT example from a
+       fresh install on one RTX 4090 (2026-10-25): T3.1 DSSAT-trained no-think r2 (<code>step-114</code>) on the T3.1
+       DSSAT split scored 8.00614849805832, equal to the table to all digits, with all 128 episodes identical to the
+       paper's bundle down to the raw model responses; a repeat on the same GPU diverged in one episode and scored
+       7.9922. Expect differences of that size when you re-score on other hardware.</p>
+    <p><b>Price-regime (T1.3): score the full split.</b> Its Cycles environment draws each episode's weather from
+       NumPy's global random state at reset, after all environments of a split are built. The weather an episode gets
+       therefore depends on the whole batch. Scoring the complete 384-scenario split reproduces the paper's numbers
+       bit for bit; a subset (<code>--max-samples</code>) or a single replayed scenario gets other weather draws.</p>
+
+    <div class="pagenav" id="pagenav"></div>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+<script src="assets/app.js?v=20261025f"></script>
+</body>
+</html>

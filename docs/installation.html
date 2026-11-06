@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Installation · AgriManager</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+<script>(function () { try { var t = localStorage.getItem('agri-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="assets/style.css?v=20261025g" />
+</head>
+<body>
+<header class="top">
+  <button class="hbtn menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="index.html"><img class="logo" src="assets/logo-icon.svg" alt="" /> <span class="wm"><span class="wm-agri">Agri</span><span class="wm-mgr">Manager</span></span> <span class="sep">/</span> <span class="doctag">Docs</span></a>
+  <div class="spacer"></div>
+  <a class="hlink" id="siteLink" href="../">Website</a>
+  <a class="hlink" id="repoLink" href="https://github.com/AgriManager-Framework/AgriManager" target="_blank" rel="noopener">GitHub</a>
+  <button class="hbtn" id="themeBtn" aria-label="Toggle light or dark theme"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+</header>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="wrap">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <h1>Installation</h1>
+    <p class="subtitle">One script, in a CPU mode or a GPU mode.</p>
+
+    <h2 id="prerequisites">Prerequisites<a class="ah" href="#prerequisites">#</a></h2>
+    <ul>
+      <li><b>Linux</b> and <b>Python 3.12</b> (Conda or <a href="https://docs.astral.sh/uv/" target="_blank" rel="noopener">uv</a>)</li>
+      <li><b>CUDA 12.8</b> drivers for training and for scoring language-model checkpoints</li>
+    </ul>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Task</th><th>Hardware</th><th>Install</th></tr>
+        <tr><td>CPU quick start: build WOFOST scenarios, score scripted policies</td><td>CPU, about 1 GB disk</td><td><code>install.sh --cpu</code></td></tr>
+        <tr><td>Score a scripted policy or an NN baseline; train an NN baseline</td><td>CPU</td><td><code>install.sh --cpu</code></td></tr>
+        <tr><td>Score a language-model checkpoint on the test suite</td><td>one CUDA GPU</td><td><code>install.sh --gpu</code></td></tr>
+        <tr><td>Train a language-model policy (GRPO)</td><td>one or more CUDA GPUs</td><td><code>install.sh --gpu</code></td></tr>
+        <tr><td>Any DSSAT setting</td><td>Linux, GCC 11 with Fortran (or let Spack build it), a Spack path of at most 37 characters; 20–40 minutes to build on 16 cores, plus about 15 if Spack builds GCC</td><td>either mode + <a href="dssat.html">DSSAT runtime</a></td></tr>
+      </table>
+    </div>
+
+    <h2 id="install">Install<a class="ah" href="#install">#</a></h2>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="c"># 1. clone with the VeRL submodule</span>
+<span class="o">git clone</span> <span class="k">--recursive</span> https://github.com/AgriManager-Framework/AgriManager.git
+<span class="o">cd</span> AgriManager
+
+<span class="c"># 2. a clean Python 3.12 environment (Conda or uv)</span>
+<span class="o">conda create</span> <span class="k">-n</span> agrimanager python=3.12 <span class="k">-y</span> <span class="k">&amp;&amp;</span> <span class="o">conda activate</span> agrimanager
+<span class="c"># or: uv venv --seed -p 3.12 .venv &amp;&amp; source .venv/bin/activate</span>
+
+<span class="c"># 3. one of the two modes</span>
+<span class="o">bash</span> install.sh <span class="k">--cpu</span>   <span class="c"># WOFOST + Cycles, scripted and NN baselines, tests</span>
+<span class="o">bash</span> install.sh <span class="k">--gpu</span>   <span class="c"># adds CUDA 12.8 PyTorch, vLLM and FlashAttention</span></pre>
+    </div>
+
+    <h2 id="what-install-does">What <code>install.sh</code> does<a class="ah" href="#what-install-does">#</a></h2>
+    <ul>
+      <li>Initializes the <b>VeRL</b> submodule (v0.7.0-1, commit <code>7522bef0</code>) and installs it.</li>
+      <li>Clones the <b>WOFOST-Gym</b> fork (<code>github.com/AgriManager-Framework/WOFOSTGym</code>, commit
+        <code>1096a6d7</code>) and the <b>CycleGym</b> fork, the Gym wrapper of the Cycles simulator
+        (<code>github.com/AgriManager-Framework/cyclesgym</code>, commit <code>c5f4ba12</code>), into
+        <code>../AgriManagerExternal/</code> and installs them. CycleGym's bootstrap downloads the Cycles
+        <code>v0.12.9-alpha</code> binary. Each fork is the upstream wrapper plus one patch commit.</li>
+      <li>Installs pinned Python packages: <code>--cpu</code> uses <code>requirements/cpu.txt</code> with
+        <code>requirements/locks/agrimanager-py312-cpu.lock.txt</code>; <code>--gpu</code> uses
+        <code>requirements/locks/agrimanager-py312-cu128.lock.txt</code> (PyTorch 2.8.0, vLLM 0.11.0, Transformers
+        4.56.1) and a FlashAttention 2.8.1 wheel.</li>
+      <li>Installs <b>AgriManager</b> in editable mode and checks the imports.</li>
+    </ul>
+    <p>Options: <code>--external-dir DIR</code> clones the wrappers elsewhere (then export
+       <code>WOFOST_GYM_PATH</code> and <code>CYCLES_GYM_PATH</code>); <code>--skip-cycles</code> leaves out CycleGym;
+       <code>AGRI_USE_LOCKFILE=0</code> lets pip resolve versions, and results may then differ. DSSAT is a separate
+       native build: see <a href="dssat.html">DSSAT runtime</a>.</p>
+    <div class="note info">
+      <span class="nt">Use a fast file system</span>
+      <p>On a shared cluster, create the environment on fast storage. On a hard-disk-backed parallel file system we
+      measured <code>install.sh --gpu</code> at 45 minutes and <code>import vllm</code> at about ten minutes; on an
+      NVMe-backed one, ten minutes and four seconds.</p>
+    </div>
+
+    <h2 id="disk">Weather data<a class="ah" href="#disk">#</a></h2>
+    <p>WOFOST weather pools download automatically on first use into <code>.cache/wofost_gym/</code> at the repository
+       root, also when an evaluator scores a suite that needs them. If the repository sits on a small disk, make
+       <code>.cache</code> a symbolic link to a larger one first. Cycles and DSSAT need no download.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Pool (Hugging Face)</th><th>Used by</th><th>Download</th><th>On disk</th></tr>
+        <tr><td><code>AgriManager-Framework/weather_pool_maize</code></td><td>observation, action-menu, reward settings; WOFOST parts of Tier 3; quick start</td><td>0.25 GB</td><td>about 0.95 GB</td></tr>
+        <tr><td><code>AgriManager-Framework/wofost-weather-regime-pool</code></td><td>weather-regime training data</td><td>0.29 GB</td><td>—</td></tr>
+        <tr><td><code>AgriManager-Framework/wofost-weather-pool</code> (20 crops)</td><td>crop-variety; the weather-regime and crop-variety test suites; WOFOST smoke tests</td><td>17.6 GB</td><td>about 65 GB</td></tr>
+      </table>
+    </div>
+
+    <h2 id="env-vars">Environment variables<a class="ah" href="#env-vars">#</a></h2>
+    <p>Most users need none of these.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Variable</th><th>Purpose</th></tr>
+        <tr><td><code>WOFOST_GYM_REMOTE</code>, <code>WOFOST_GYM_REF</code></td><td>install: git remote and commit for WOFOST-Gym (default: the AgriManager-Framework fork at the pinned commit)</td></tr>
+        <tr><td><code>CYCLES_GYM_REMOTE</code>, <code>CYCLES_GYM_REF</code></td><td>install: the same for CycleGym</td></tr>
+        <tr><td><code>AGRI_EXTERNAL_DIR</code></td><td>install: same as <code>--external-dir</code></td></tr>
+        <tr><td><code>VLLM_USE_FLASHINFER_SAMPLER</code></td><td>GPU runs: the train and eval entry points set it to <code>0</code>, so vLLM does not JIT-compile FlashInfer sampling kernels, which needs <code>nvcc</code> on the GPU node. Set <code>1</code> to use FlashInfer</td></tr>
+        <tr><td><code>WOFOST_GYM_PATH</code>, <code>CYCLES_GYM_PATH</code>, <code>DSSAT_GYM_PATH</code></td><td>runtime: simulator locations (<a href="configuration.html#env-vars">Configuration</a>)</td></tr>
+        <tr><td><code>HF_TOKEN</code></td><td>only to upload checkpoints or result bundles</td></tr>
+      </table>
+    </div>
+
+    <h2 id="check">Check the install<a class="ah" href="#check">#</a></h2>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">python</span> <span class="k">-c</span> "import agrimanager, pcse_gym, cyclesgym; print('ok')"
+<span class="o">bash</span> smoke_tests/wofost_gym/run_cpu_quickstart.sh
+<span class="o">python</span> <span class="k">-m</span> pytest <span class="k">-q</span> tests</pre>
+    </div>
+    <p>Both modes were run on 2026-10-25 from a fresh clone with an empty pip cache: <code>--cpu</code> in about two
+       minutes on a CPU machine, <code>--gpu</code> in about ten minutes on one A40 (NVMe storage). In both, 194 tests
+       passed and the quick start printed the expected numbers. Per-simulator smoke tests are described in
+       <code>smoke_tests/{wofost_gym,cycles_gym,gym_dssat}/README.md</code>.</p>
+
+    <div class="pagenav" id="pagenav"></div>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+<script src="assets/app.js?v=20261025f"></script>
+</body>
+</html>

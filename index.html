@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgriManager</title>
+<meta name="description" content="AgriManager: a framework and benchmark for LLM-RL generalization in agricultural management. NeurIPS 2026, Evaluations & Datasets Track.">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  (function () { try { var t = localStorage.getItem("agm3-theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {} })();
+  // Fluid scale for large screens: 1.0 up to 1440 px wide, rising linearly to 1.18 at 2560 px (mobile and laptops unchanged).
+  (function () {
+    function z() { var w = window.innerWidth / (parseFloat(document.documentElement.style.zoom) || 1);
+      var k = Math.max(1, Math.min(1.18, 1 + 0.18 * (window.innerWidth - 1440) / 1120));
+      document.documentElement.style.zoom = k === 1 ? "" : k.toFixed(3);
+      document.documentElement.style.setProperty("--vh", (window.innerHeight / k).toFixed(1) + "px"); }
+    z(); window.addEventListener("resize", z);
+  })();
+</script>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/site3.css?v=10270734">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14M5 19l7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5c3.5 4.4 6 7.7 6 10.6A6 6 0 0 1 6 14.1c0-2.9 2.5-6.2 6-10.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="currentColor"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z" fill="currentColor"/></symbol>
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+  <symbol id="i-data" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="2.6"/><path d="M5 6v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6M5 12v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6v-6"/></g></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M9 7l-5 5 5 5M15 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v6M12 7.5v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+</svg>
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="AgriManager home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="292 177 1470 304" class="wordmark" role="img" aria-label="AgriManager" fill="none">
+  <path fill="var(--logo-green)" fill-rule="evenodd" d="M540,341 L539,340 L531,342 L521,342 L520,343 L497,344 L496,345 L470,347 L448,353 L432,361 L418,372 L407,384 L395,402 L382,428 L382,431 L394,419 L408,408 L437,392 L463,383 L479,380 L481,382 L458,391 L444,398 L427,409 L412,421 L395,438 L386,449 L387,450 L402,447 L432,446 L433,445 L452,443 L469,438 L487,428 L506,410 L515,397 L528,371 Z M968,297 L967,298 L967,387 L968,388 L990,388 L991,387 L991,298 L990,297 Z M955,296 L944,295 L937,297 L930,301 L923,309 L921,308 L921,298 L920,297 L898,297 L897,298 L897,387 L898,388 L921,388 L922,387 L922,339 L924,331 L933,321 L939,318 L944,317 L955,318 L956,317 L956,297 Z M880,297 L858,297 L857,298 L857,306 L855,307 L850,302 L841,297 L833,295 L821,295 L808,299 L802,303 L794,311 L787,326 L786,338 L785,339 L787,357 L793,370 L803,380 L813,385 L821,387 L838,386 L849,381 L856,376 L857,377 L857,387 L855,395 L847,404 L840,407 L828,408 L818,406 L807,401 L802,397 L791,414 L793,417 L804,423 L813,426 L818,426 L819,427 L844,427 L856,424 L864,420 L872,413 L879,400 L880,390 L881,389 L881,298 Z M827,316 L840,316 L845,318 L852,324 L857,335 L857,347 L853,357 L847,363 L840,366 L832,367 L831,366 L826,366 L820,363 L813,355 L811,349 L812,330 L814,326 L821,319 Z M707,261 L688,309 L684,322 L678,335 L674,348 L670,356 L666,369 L662,377 L661,382 L658,387 L659,388 L685,388 L687,386 L693,367 L697,362 L747,362 L750,366 L756,385 L758,388 L784,388 L785,386 L758,318 L756,310 L749,294 L738,263 L736,261 Z M721,292 L723,293 L737,331 L739,334 L740,338 L738,340 L705,340 L703,338 L713,313 L718,297 Z M975,253 L967,259 L965,263 L965,272 L968,277 L974,281 L984,281 L988,279 L993,273 L994,269 L993,262 L990,257 L986,254 Z M327,449 L327,451 L357,451 L369,421 L384,392 L399,371 L415,355 L443,338 L470,284 L470,282 L474,276 L474,274 L478,267 L481,265 L484,268 L511,324 L511,326 L513,328 L516,327 L531,327 L532,326 L547,326 L548,325 L559,325 L561,327 L550,356 L538,383 L538,387 L552,414 L552,416 L568,449 L571,451 L634,451 L635,450 L556,289 L556,287 L543,262 L543,260 L521,216 L521,214 L515,208 L512,207 L453,207 L446,212 Z"/>
+  <path fill="var(--logo-navy)" fill-rule="evenodd" d="M1726,296 L1714,295 L1706,297 L1699,301 L1692,309 L1690,308 L1690,298 L1689,297 L1667,297 L1666,298 L1666,387 L1667,388 L1689,388 L1690,387 L1690,337 L1692,331 L1701,321 L1711,317 L1724,317 L1726,318 L1727,317 L1727,297 Z M1588,299 L1581,303 L1572,311 L1564,326 L1563,336 L1562,337 L1562,348 L1563,349 L1564,359 L1569,370 L1581,382 L1586,385 L1600,389 L1622,389 L1633,386 L1639,383 L1649,375 L1649,373 L1637,362 L1635,362 L1629,367 L1623,370 L1604,371 L1596,367 L1588,358 L1586,350 L1588,348 L1654,348 L1655,347 L1655,334 L1652,322 L1648,314 L1636,302 L1625,297 L1615,295 L1604,295 Z M1586,332 L1589,324 L1596,317 L1606,313 L1617,314 L1623,317 L1629,323 L1632,330 L1632,332 L1629,335 L1591,335 Z M1551,297 L1529,297 L1528,298 L1528,306 L1526,307 L1514,298 L1502,295 L1494,295 L1493,296 L1488,296 L1476,301 L1465,311 L1460,320 L1457,331 L1457,352 L1459,360 L1467,374 L1474,380 L1488,386 L1508,386 L1512,385 L1520,381 L1526,376 L1528,377 L1529,384 L1528,385 L1528,391 L1525,398 L1519,404 L1512,407 L1507,408 L1491,407 L1479,402 L1474,398 L1472,398 L1462,414 L1464,417 L1473,422 L1491,427 L1514,427 L1523,425 L1533,421 L1544,411 L1549,402 L1552,388 L1552,298 Z M1501,315 L1508,315 L1517,318 L1525,326 L1529,338 L1528,350 L1526,355 L1518,363 L1508,367 L1500,367 L1491,363 L1485,357 L1481,348 L1481,335 L1485,325 L1491,319 Z M1367,305 L1366,308 L1372,321 L1375,321 L1380,318 L1393,314 L1410,314 L1417,317 L1420,320 L1422,324 L1422,331 L1419,334 L1387,336 L1376,339 L1367,344 L1361,352 L1359,361 L1360,371 L1364,379 L1369,384 L1381,389 L1400,389 L1410,386 L1421,378 L1423,380 L1423,387 L1424,388 L1444,388 L1445,387 L1445,376 L1446,375 L1445,373 L1446,371 L1445,369 L1446,364 L1445,360 L1445,319 L1440,308 L1436,304 L1425,298 L1409,295 L1398,295 L1397,296 L1386,297 L1374,301 Z M1422,349 L1422,360 L1420,364 L1412,371 L1400,374 L1390,373 L1382,365 L1382,359 L1389,351 L1401,348 L1415,348 L1416,347 L1420,347 Z M1338,303 L1332,299 L1324,296 L1310,295 L1298,298 L1284,308 L1283,307 L1283,298 L1282,297 L1260,297 L1259,298 L1259,387 L1260,388 L1282,388 L1283,387 L1283,331 L1286,325 L1292,319 L1299,316 L1311,316 L1317,319 L1322,325 L1324,332 L1324,387 L1325,388 L1347,388 L1348,387 L1348,326 L1345,313 Z M1168,304 L1166,306 L1166,308 L1170,318 L1173,322 L1177,319 L1192,314 L1210,314 L1217,317 L1221,321 L1222,331 L1219,334 L1194,335 L1193,336 L1182,337 L1168,343 L1161,351 L1159,357 L1159,369 L1163,379 L1170,385 L1181,389 L1200,389 L1213,384 L1220,378 L1222,379 L1222,387 L1223,388 L1244,388 L1245,387 L1245,319 L1240,308 L1230,300 L1222,297 L1211,296 L1210,295 L1197,295 L1196,296 L1185,297 L1181,299 L1178,299 Z M1222,349 L1221,363 L1215,369 L1209,372 L1199,374 L1190,373 L1186,371 L1182,366 L1183,356 L1191,350 L1200,348 L1216,348 L1217,347 L1220,347 Z M1011,262 L1011,387 L1012,388 L1033,388 L1034,387 L1034,310 L1035,309 L1038,311 L1069,376 L1087,376 L1089,374 L1099,351 L1121,308 L1123,309 L1123,387 L1125,388 L1143,388 L1147,387 L1147,269 L1146,268 L1147,262 L1146,261 L1118,261 L1116,263 L1079,342 L1076,340 L1069,323 L1041,263 L1039,261 L1012,261 Z"/>
+</svg>
+</a>
+    <nav class="nav-links" aria-label="Pages">
+      <a href="index.html" class="active" aria-current="page">Overview</a>
+      <a href="benchmark.html">Benchmark</a>
+      <a href="results.html">Results</a>
+      <a href="docs/index.html">Docs</a>
+    </nav>
+    <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle light or dark theme">
+      <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <svg class="moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="venue-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8-4.3-4.1 5.9-.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>NeurIPS 2026 · Evaluations &amp; Datasets Track</p>
+      <h1><span class="agri">Agri</span>Manager</h1>
+      <p class="headline">A Framework and Benchmark for LLM&#8209;RL Generalization in Agricultural Management</p>
+      <p class="authors"><a class="au" href="https://chigui0.github.io/" target="_blank" rel="noopener">Chi Gui</a><sup>1</sup>, <a class="au" href="https://www.linkedin.com/in/lily-zheng-031707274/" target="_blank" rel="noopener">Junwen Zheng</a><sup>1</sup>, <a class="au" href="https://www.linkedin.com/in/ritwik-nigam-193083283" target="_blank" rel="noopener">Ritwik Nigam</a><sup>1</sup>, <a class="au" href="https://scholar.google.com/citations?user=iV5nuc4AAAAJ" target="_blank" rel="noopener">Qianlan Yang</a><sup>1</sup>, <a class="au" href="http://www.meaganlang.com" target="_blank" rel="noopener">Meagan Lang</a><sup>1</sup>, <a class="au" href="https://vardhandongre.com/" target="_blank" rel="noopener">Vardhan Dongre</a><sup>1</sup>, <a class="au" href="https://scholar.google.com/citations?user=flSj3IAAAAAJ" target="_blank" rel="noopener">Jeremiah Barr</a><sup>2</sup>, <a class="au" href="https://yxw.web.illinois.edu/" target="_blank" rel="noopener">Yu-Xiong Wang</a><sup>1</sup>, <a class="au" href="https://vikram.cs.illinois.edu/" target="_blank" rel="noopener">Vikram S. Adve</a><sup>1</sup>
+        <span class="aff"><sup>1</sup>University of Illinois Urbana-Champaign · <sup>2</sup>Corteva Agriscience</span></p>
+      <div class="cta">
+        <a class="btn primary" href="#" data-todo="paper link not public yet"><svg><use href="#i-paper"/></svg>Paper</a>
+        <a class="btn" href="https://github.com/AgriManager-Framework/AgriManager"><svg><use href="#i-code"/></svg>Code</a>
+        <a class="btn" href="https://huggingface.co/AgriManager-Framework"><svg><use href="#i-data"/></svg>Models &amp; Data</a>
+        <button class="btn" type="button" id="vidOpen"><svg><use href="#i-play"/></svg>Video</button>
+      </div>
+    </div>
+    <div>
+      <div class="card story" id="story" aria-label="Animated replay of a real test episode">
+        <button class="icon-btn play-btn story-play" id="stPlay" type="button" aria-label="Pause"><svg><use href="#i-pause"/></svg></button>
+        <svg class="story-scene" id="stScene" viewBox="0 0 560 320" role="img" aria-label="Maize field over the season"></svg>
+        <svg class="story-line" id="stLine" viewBox="0 0 560 70" aria-label="Season timeline: every decision of the agent; select one to inspect it"></svg>
+        <div class="story-cap" id="stCap" aria-live="polite">
+          <div class="story-tickrow"><div class="story-tick" id="stTick"></div><button class="resume" id="stResume" type="button" hidden>Resume ▶</button></div>
+          <div class="story-rows" id="stRows">
+            <div class="srow"><span class="k">Observe</span><span id="stSees"></span></div>
+            <div class="srow"><span class="k">Think</span><q id="stThinks"></q></div>
+            <div class="srow"><span class="k">Act</span><span><span class="act-pill" id="stDoes"></span></span></div>
+          </div>
+        </div>
+        <div class="story-end" id="stEnd"><div>
+          <div class="lbl">Harvest</div>
+          <div class="big" id="stBig"></div>
+          <div class="biglbl">vs the untrained model on the same field</div>
+          <div class="end-chips"><span class="chip" id="stChipY"></span><span class="chip" id="stChipN"></span></div>
+          <div class="end-mute" id="stMute"></div>
+        </div></div>
+        <div class="storyboard" id="stBoard" hidden></div>
+      </div>
+      <p class="replay-cap" id="stCapLine"></p>
+    </div>
+  </div>
+</section>
+
+
+<section class="section alt" id="schema">
+  <div class="wrap">
+    <div class="sec-head split reveal">
+      <div>      <h2 class="one-line">Beyond Distribution Shift: <span class="accent-blue">Schema Shift</span></h2>
+      <p class="lead">Traditional RL generalization focuses largely on changing environments under a fixed task interface. But what happens when the interface itself changes?</p></div>
+    </div>
+    <div class="shift-pair">
+      <div class="shift-card reveal">
+        <div class="hd"><span class="badge">Distribution shift</span></div>
+        <h3>Same interface, different context</h3>
+        <svg class="illus" viewBox="0 0 420 114" aria-hidden="true">
+          <g fill="var(--faint)" opacity=".8"><circle cx="62" cy="46" r="5"/><circle cx="80" cy="34" r="5"/><circle cx="74" cy="58" r="5"/><circle cx="96" cy="50" r="5"/><circle cx="58" cy="68" r="5"/><circle cx="90" cy="70" r="5"/><circle cx="104" cy="32" r="5"/></g>
+          <g fill="var(--green)"><circle cx="292" cy="38" r="5"/><circle cx="314" cy="24" r="5"/><circle cx="306" cy="52" r="5"/><circle cx="330" cy="44" r="5"/><circle cx="288" cy="62" r="5"/><circle cx="326" cy="66" r="5"/><circle cx="340" cy="26" r="5"/></g>
+          <path d="M140 50h110" stroke="var(--rule-strong)" stroke-width="1.6" stroke-dasharray="4 5"/><path d="M244 44l8 6-8 6" fill="none" stroke="var(--rule-strong)" stroke-width="1.6"/>
+          <text x="80" y="104" text-anchor="middle" font-size="18" fill="var(--muted)" font-family="JetBrains Mono, monospace">train</text>
+          <text x="312" y="104" text-anchor="middle" font-size="18" fill="var(--muted)" font-family="JetBrains Mono, monospace">test</text>
+        </svg>
+        <ul class="ex-list">
+          <li><span class="k">Weather</span><span class="v">Normal<span class="arrow">→</span>Drought</span></li>
+          <li><span class="k">Crop</span><span class="v">Seen<span class="arrow">→</span>Unseen</span></li>
+          <li><span class="k">Price</span><span class="v">Typical<span class="arrow">→</span>High corn price</span></li>
+        </ul>
+      </div>
+      <div class="shift-card schema reveal">
+        <div class="hd"><span class="badge blue">Schema shift</span></div>
+        <h3>The task interface itself changes</h3>
+        <svg class="illus" viewBox="0 0 420 114" aria-hidden="true">
+          <g font-family="Inter Tight, Inter, sans-serif" font-weight="600" font-size="17" text-anchor="middle">
+            <rect x="20" y="22" width="44" height="44" rx="10" fill="var(--surface)" stroke="var(--blue-line)"/><text x="42" y="50" fill="var(--ink-2)">O</text>
+            <rect x="72" y="22" width="44" height="44" rx="10" fill="var(--surface)" stroke="var(--blue-line)"/><text x="94" y="50" fill="var(--ink-2)">A</text>
+            <rect x="124" y="22" width="44" height="44" rx="10" fill="var(--surface)" stroke="var(--blue-line)"/><text x="146" y="50" fill="var(--ink-2)">R</text>
+            <rect x="252" y="22" width="44" height="44" rx="10" fill="var(--blue)"/><text x="274" y="50" fill="var(--surface)">O′</text>
+            <rect x="304" y="22" width="44" height="44" rx="10" fill="var(--blue)"/><text x="326" y="50" fill="var(--surface)">A′</text>
+            <rect x="356" y="22" width="44" height="44" rx="10" fill="var(--blue)"/><text x="378" y="50" fill="var(--surface)">R′</text>
+          </g>
+          <path d="M184 44h52" stroke="var(--blue)" stroke-width="1.6" stroke-dasharray="4 5"/><path d="M230 38l8 6-8 6" fill="none" stroke="var(--blue)" stroke-width="1.6"/>
+          <text x="94" y="104" text-anchor="middle" font-size="18" fill="var(--muted)" font-family="JetBrains Mono, monospace">train interface</text>
+          <text x="326" y="104" text-anchor="middle" font-size="18" fill="var(--blue)" font-family="JetBrains Mono, monospace">test interface</text>
+        </svg>
+        <ul class="ex-list">
+          <li><span class="k">Observation</span><span class="v">Full<span class="arrow">→</span><span class="to">Partial</span></span></li>
+          <li><span class="k">Action</span><span class="v">N + Water<span class="arrow">→</span><span class="to">N only</span></span></li>
+          <li><span class="k">Reward</span><span class="v">Yield<span class="arrow">→</span><span class="to">Profit</span></span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="sigma-row reveal">
+      <p class="eq" role="img" aria-label="Sigma equals the tuple Sigma O, Sigma A, Sigma R: observation, action and reward schemas"><span class="s">Σ</span><span class="eqop">=</span><span class="par">(</span><span class="term"><span class="s">Σ</span><sub>O</sub><small>observation</small></span><span class="cm">,</span><span class="term"><span class="s">Σ</span><sub>A</sub><small>action</small></span><span class="cm">,</span><span class="term"><span class="s">Σ</span><sub>R</sub><small>reward</small></span><span class="par">)</span></p>
+      <p class="formula-line">We formalize schema shift as a change in the policy-facing schema Σ between training and deployment.</p>
+    </div>
+    <div class="ire reveal" id="ire">
+      <div class="ire-top">
+        <h3>Same field, different prompt</h3>
+        <div class="seg blue small" role="tablist" id="ireTabs">
+          <button role="tab" aria-selected="true" data-t="observation">Observation</button>
+          <button role="tab" aria-selected="false" data-t="action">Action</button>
+          <button role="tab" aria-selected="false" data-t="reward">Reward</button>
+        </div>
+        <a class="more" href="benchmark.html#prompts">See the real prompts<svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <p class="ire-say" id="ireSay"></p>
+      <div class="ire-cols" id="ireDiff"></div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section why" id="why">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2>Why Study Schema Shift in <span class="accent-green">Agriculture</span>?</h2>
+      <p class="subtitle">Farms vary in their task interface, and every decision plays out over a season or years.</p>
+    </div>
+    <div class="why3 reveal">
+      <div><b>Varying task interfaces</b><span>Farms differ in what they observe, can do, and aim for.</span></div>
+      <div><b>Long-term consequences</b><span>Decisions pay off at harvest, or years later.</span></div>
+      <div><b>Simulation-driven evaluation</b><span>DSSAT, WOFOST and Cycles allow reproducible training and testing.</span></div>
+    </div>
+    <div class="tasks reveal" id="tasks">
+      <p class="tk-kicker">Two task families</p>
+      <div class="task-cards">
+        <div class="task-card">
+          <div class="tk-hd"><b>Crop growth</b><span>WOFOST · DSSAT · Cycles</span></div>
+          <div class="tk-line g"><span class="tl-lbl">Sowing</span><span class="tl"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="tl-end">Harvest<em>reward</em></span></div>
+          <p class="tk-one">Manage one field through a growing season.</p>
+          <dl class="tk-oar"><dt>Observation</dt><dd>Crop stage and biomass, soil nutrients and water, inputs applied so far, weather</dd>
+              <dt>Action</dt><dd>Apply N, P or K fertilizer, irrigate, or wait, every few days</dd>
+              <dt>Objective</dt><dd>Profit by default; also yield, water or nutrient stewardship</dd></dl>
+        </div>
+        <div class="task-card">
+          <div class="tk-hd"><b>Crop planning</b><span>Cycles</span></div>
+          <div class="tk-line p"><span class="tl-lbl">Year 1</span><span class="tl"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="tl-end">Year 19<em>revenue</em></span></div>
+          <p class="tk-one">Plan a multi-year crop rotation on one field.</p>
+          <dl class="tk-oar"><dt>Observation</dt><dd>Soil nitrogen state, current crop prices, years remaining, past crops and revenue</dd>
+              <dt>Action</dt><dd>Which crop to plant this year, and in which week</dd>
+              <dt>Objective</dt><dd>Gross revenue (yield × price), summed over the rotation</dd></dl>
+        </div>
+      </div>
+      <div class="tk-chips"><b class="tk-sup">We support</b><span>20+ crops</span><span>Varied seasons: drought, hot, cold, wet</span><span>Varied crop prices</span><span>Multiple goals: profit, yield, water, nutrients</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="framework">
+  <div class="wrap">
+    <div class="sec-head reveal">
+            <h2>Meet <span class="accent-green">AgriManager</span></h2>
+      <p class="subtitle">One RL framework for LLM agents across different crop simulators.</p>
+    </div>
+    <figure class="fw-fig card reveal" id="fwFig" aria-label="AgriManager training loop: the simulator sends state s to the LLM policy, the policy sends action a back, rewards r feed an RL update from trajectories, which updates the policy">
+      <div id="fwSvg"></div>
+    </figure>
+    <div class="fw-cards reveal">
+      <a class="fw-card" href="docs/new-environment.html" title="Add your own simulator through the same adapter (docs)."><span class="hd"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="10.5" width="18" height="5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="17" width="18" height="4" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span><b>Three crop simulators</b></span>
+        <span class="ln">DSSAT, WOFOST and Cycles behind one text interface.</span><span class="chips"><span class="c">DSSAT</span><span class="c">WOFOST</span><span class="c">Cycles</span></span></a>
+      <a class="fw-card" href="benchmark.html#prompts" title="See real prompts on the Benchmark page."><span class="hd"><span class="ico b"><svg viewBox="0 0 24 24"><path d="M5 4h10l4 4v12H5z M15 4v4h4 M8 12h8 M8 16h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg></span><b>Schema in the prompt</b></span>
+        <span class="ln">Observation, action and objective schemas declared per episode.</span><span class="chips"><span class="c">Observation</span><span class="c">Action</span><span class="c">Objective</span></span></a>
+      <a class="fw-card" href="docs/models.html" title="Backbones such as Qwen and Llama on VeRL; see Supported models in the docs."><span class="hd"><span class="ico"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v4.5h-4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Joint training</b></span>
+        <span class="ln">One LLM policy across simulators and objectives.</span><span class="chips"><span class="c">GRPO · DrGRPO · PPO · …</span></span></a>
+      <a class="fw-card" href="docs/evaluation.html" title="NN-RL: PPO, A2C, DQN, MaskablePPO. Scripted baselines are scored on the same scenarios; all appear in the same tables."><span class="hd"><span class="ico b"><svg viewBox="0 0 24 24"><path d="M4 6h10M4 12h10M4 18h10M17 5.5l1.6 1.6L21 4.5M17 11.5l1.6 1.6 2.4-2.6M17 17.5l1.6 1.6 2.4-2.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Unified training and evaluation</b></span>
+        <span class="ln">LLM and neural-network policies, trained and scored on the same scenarios.</span><span class="chips"><span class="c">LLM</span><span class="c">NN-RL</span><span class="c">Scripted</span></span></a>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="benchmark">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2 class="nowrap-lg">A Three-Tier Generalization Benchmark</h2>
+      <p class="subtitle">Does an RL-trained LLM policy still generalize under schema shift? Each tier adds more: none, one component, or several at once.</p>
+    </div>
+    <div class="tcards reveal">
+      <article class="tcard t1">
+        <header><span class="tn">Tier 1</span><h4>Within Schema</h4></header>
+        <p class="tc-farm"><b>Distribution shift only.</b> Weather, crop traits, or prices vary under the same task schema.</p>
+        <p class="tc-formal2">(O, A, R) unchanged · context changes (weather, crop, prices)</p>
+        <div class="chips tc-chips"><span class="chip">Weather</span><span class="chip">Crop variety</span><span class="chip">Price</span></div>
+        <div class="tc-elig"><span class="elig ok" title="A fixed-interface neural policy cannot run when its input layout or action encoding changes, and has no objective conditioning; a masked-action PPO can cover menus drawn from a shared action vocabulary (see paper, Appendix on neural baselines)."><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".16"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Fixed-interface NN</span><span class="elig ok"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".16"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>LLM</span></div>
+      </article>
+      <article class="tcard t2">
+        <header><span class="tn">Tier 2</span><h4>Single-Axis Schema</h4></header>
+        <p class="tc-farm"><b>One schema component shifts.</b> One of measurements, management options, or goals changes.</p>
+        <p class="tc-formal2 has-tip" title="Action menus also bring their own environment wrappers.">One of O, A, R changes</p>
+        <div class="chips tc-chips"><span class="chip">Observation</span><span class="chip">Action menu</span><span class="chip">Reward</span></div>
+        <div class="tc-elig"><span class="elig no" title="A fixed-interface neural policy cannot run when its input layout or action encoding changes, and has no objective conditioning; a masked-action PPO can cover menus drawn from a shared action vocabulary (see paper, Appendix on neural baselines)."><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".16"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Fixed-interface NN</span><span class="elig ok"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".16"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>LLM</span></div>
+      </article>
+      <article class="tcard t3">
+        <header><span class="tn">Tier 3</span><h4>Compositional Schema</h4></header>
+        <p class="tc-farm"><b>Several schema components shift at once.</b> Across farms, measurements, management options, and goals differ.</p>
+        <p class="tc-formal2">Several of O, A, R change; dynamics P may change too</p>
+        <div class="chips tc-chips"><span class="chip">Cross-simulator</span><span class="chip">Unified policy</span></div>
+        <div class="tc-elig"><span class="elig no" title="A fixed-interface neural policy cannot run when its input layout or action encoding changes, and has no objective conditioning; a masked-action PPO can cover menus drawn from a shared action vocabulary (see paper, Appendix on neural baselines)."><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".16"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Fixed-interface NN</span><span class="elig ok"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".16"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>LLM</span></div>
+      </article>
+    </div>
+    <p class="quiet-line reveal">All results are scored on a frozen, held-out test suite. <a class="more" href="benchmark.html">Benchmark details<svg><use href="#i-arrow"/></svg></a> <a class="more" href="benchmark.html#protocol">Evaluation protocol<svg><use href="#i-arrow"/></svg></a></p>
+  </div>
+</section>
+
+
+
+<section class="section alt" id="findings">
+  <div class="wrap">
+    <div class="sec-head reveal" style="max-width:none">
+            <h2 class="nowrap-lg f-title">Where Generalization Works — and Where It Breaks</h2>
+    </div>
+    
+    <article class="finding reveal">
+      <div><span class="tpill">Tier 1</span><h3>Within a fixed interface, RL generalizes</h3><p>With explicit reasoning, a Qwen3-4B policy trained by RL improves over the untrained model on every held-out weather regime, crop and price regime, and outperforms a neural-network PPO baseline trained with the same budget. Without reasoning, training often stalls near doing nothing.</p></div>
+      <div class="f1viz">
+        <div class="t1bars" data-t1bars title="Held-out test conditions, think arm, mean of three training seeds. Weather: profit-equivalent t/ha above doing nothing, potato, four held-out weather regimes. Crops and prices: normalized return (1 = scripted agronomic reference)."></div>
+      </div>
+    </article>
+    <article class="finding f2 reveal">
+      <div class="f2head"><span class="tpill">Tier 2</span><h3>Different schema shifts, different bottlenecks</h3></div>
+      <div class="f2cards">
+        <div class="f2card"><b>Observations</b><p>Renaming, adding or dropping secondary fields barely matters; removing the resource state (soil water and nutrients) breaks the policy.</p><div class="f2viz" data-obsmini></div></div>
+        <div class="f2card"><b>Actions</b><p>The policy handles a new menu if it has seen those actions together before.<sup><a href="benchmark.html#tier-2" title="Consistent with joint action coverage; menu wrappers also differ (paper §4.2).">1</a></sup></p>
+          <div class="f2viz f2act"><div class="t2-arow" title="Family A, held-out menu lnw: think 2.69 vs untrained 2.40 (normalized return, mean of three seeds)">
+            <span class="t2-lab">Trained on</span><span class="t2-menus"><span class="t2-menu"><i class="t2-chip">N</i><i class="t2-chip">P</i><i class="t2-chip">K</i><i class="t2-chip">W</i></span><span class="t2-menu"><i class="t2-chip">N</i><i class="t2-chip">P</i><i class="t2-chip">K</i></span></span>
+            <span class="t2-arr">→</span><span class="t2-menu t2-new"><i class="t2-chip">N</i><i class="t2-chip">W</i></span>
+            <span class="t2-res t2-up">Improves over the untrained model</span></div><div class="t2-arow" title="Family B, held-out menu lnw: think 1.96 vs untrained 2.40 (normalized return, mean of three seeds)">
+            <span class="t2-lab">Trained on</span><span class="t2-menus"><span class="t2-menu"><i class="t2-chip">N</i><i class="t2-chip">P</i><i class="t2-chip">K</i></span><span class="t2-menu"><i class="t2-chip">W</i></span></span>
+            <span class="t2-arr">→</span><span class="t2-menu t2-new"><i class="t2-chip">N</i><i class="t2-chip">W</i></span>
+            <span class="t2-res t2-down">Falls below the untrained model</span></div><div class="t2-cap">N, P, K: nitrogen, phosphorus, potassium fertilizer · W: irrigation water</div></div>
+          <p class="fn"><sup>1</sup> Consistent with joint action coverage; menu wrappers also differ (paper §4.2).</p></div>
+        <div class="f2card"><b>Objectives</b><p>Trained on yield alone, the policy transfers to profit, water and nutrient goals it never saw. Trained on several goals at once, only the reasoning policy learns reliably.</p><div class="f2viz" data-rewmini></div></div>
+      </div>
+    </article>
+    <article class="finding f2 f3 reveal">
+      <div class="f2head"><span class="tpill">Tier 3</span><h3>Composition remains open</h3></div>
+      <div class="f2cards t3cards">
+        <div class="f2card"><b>Switching simulators</b><p>A policy trained on one simulator improves on that simulator, but on another simulator it usually ends up worse than before training.</p>
+          <div class="f2viz"><table class="t3-grid"><thead><tr><th class="t3-corner"><span>Trained on ↓</span><span>Tested on →</span></th><th>WOFOST</th><th>DSSAT</th><th>Cycles</th></tr></thead><tbody><tr><th>WOFOST</th><td class="t3-up t3-diag" title="Trained on WOFOST, tested on WOFOST: 2.99 vs untrained 2.33 (normalized return, mean of three seeds)">▲ better</td><td class="t3-up" title="Trained on WOFOST, tested on DSSAT: 0.45 vs untrained 0.00 (normalized return, mean of three seeds)">▲ better<sup>1</sup></td><td class="t3-down" title="Trained on WOFOST, tested on Cycles: 0.89 vs untrained 0.98 (normalized return, mean of three seeds)">▼ worse</td></tr><tr><th>DSSAT</th><td class="t3-down" title="Trained on DSSAT, tested on WOFOST: 2.13 vs untrained 2.33 (normalized return, mean of three seeds)">▼ worse</td><td class="t3-up t3-diag" title="Trained on DSSAT, tested on DSSAT: 0.94 vs untrained 0.00 (normalized return, mean of three seeds)">▲ better</td><td class="t3-down" title="Trained on DSSAT, tested on Cycles: 0.85 vs untrained 0.98 (normalized return, mean of three seeds)">▼ worse</td></tr><tr><th>Cycles</th><td class="t3-down" title="Trained on Cycles, tested on WOFOST: 1.94 vs untrained 2.33 (normalized return, mean of three seeds)">▼ worse</td><td class="t3-up" title="Trained on Cycles, tested on DSSAT: 0.31 vs untrained 0.00 (normalized return, mean of three seeds)">▲ better<sup>1</sup></td><td class="t3-up t3-diag" title="Trained on Cycles, tested on Cycles: 1.08 vs untrained 0.98 (normalized return, mean of three seeds)">▲ better</td></tr></tbody></table><div class="t2-cap">Compared with the untrained model on the test simulator</div></div>
+          <p class="fn"><sup>1</sup> Both gains off the diagonal go into DSSAT, where the untrained model scores 0 because it misses the output format.</p></div>
+        <div class="f2card"><b>Recombining components</b><p>One policy is trained on many simulator, action menu and goal combinations, then tested on a combination it never saw. On DSSAT it gets about 86% of the way to a specialist trained on that exact combination. On WOFOST and Cycles it stays below the untrained model.</p>
+          <div class="f2viz"><div class="t2-cap">Held-out profit targets, one combination each</div><div data-uvs></div>
+            <div class="legend" style="margin-top:8px"><span><i style="border:1.5px solid var(--muted);border-radius:50%"></i>Untrained</span><span><i style="background:var(--blue);border-radius:50%"></i>One policy, never saw this combination</span><span><i style="background:var(--green);transform:rotate(45deg);border-radius:2px"></i>Specialist, trained on it</span></div>
+            <div class="t2-cap">Each row has its own scale.</div></div></div>
+      </div>
+      <p class="tagline-q">Seeing the components of a task is not the same as mastering their combination.</p>
+    </article>
+    <div class="end-row reveal"><p class="insight"><svg><use href="#i-bulb"/></svg><span><b>Additional insight</b>On Qwen, reasoning mainly stabilizes RL training; this does not hold for every task or backbone.</span></p>
+      <a class="more" href="results.html">All results and charts<svg><use href="#i-arrow"/></svg></a></div>
+    
+  </div>
+</section>
+</main>
+<div class="vmodal" id="vidModal" hidden aria-modal="true" role="dialog" aria-label="AgriManager video">
+  <button class="vclose" type="button" id="vidClose" aria-label="Close video">×</button>
+  <video id="vidEl" controls playsinline preload="none" poster="assets/agrimanager_video_poster.png">
+    <source src="assets/agrimanager_video.mp4?v=10270734" type="video/mp4">
+  </video>
+</div>
+<footer class="footer" id="start">
+  <div class="wrap">
+    <h2>Start building with AgriManager</h2>
+    <div class="starts">
+      <a class="start main" href="docs/models.html"><span class="n">01</span><b>Train LLM Policies</b><span>Bring any LLM and RL algorithm. AgriManager turns crop simulators into RL environments for language-model policies.</span><div class="tags"><i>Qwen · Llama · …</i><i>GRPO · DrGRPO · PPO · …</i></div><span class="go">Supported models &amp; algorithms →</span></a>
+      <a class="start" href="docs/evaluation.html"><span class="n">02</span><b>Evaluate on the Benchmark</b><span>Compare models and RL algorithms on the same frozen held-out tests, across three tiers of schema shift.</span><div class="tags"><i>Within Schema</i><i>Single-Axis</i><i>Compositional</i></div><span class="go">Evaluation →</span></a>
+      <a class="start" href="docs/new-environment.html"><span class="n">03</span><b>Integrate New Simulators</b><span>Add a crop simulator, or define new observations, actions and goals, through one adapter.</span><div class="tags"><i>WOFOST · DSSAT · Cycles · your simulator</i></div><span class="go">Adapter guide →</span></a>
+    </div>
+    <p class="start-new"><a href="docs/quickstart.html">Quickstart →</a></p>
+    <div class="res">
+      <div>
+        <p class="eyebrow">Resources</p>
+        <div class="res-links">
+          <a href="#" data-todo="paper link not public yet">Paper <span>coming soon</span></a>
+          <a href="https://github.com/AgriManager-Framework/AgriManager">Code <span>github.com/AgriManager-Framework</span></a>
+          <a href="https://huggingface.co/AgriManager-Framework">Datasets &amp; Models <span>huggingface.co/AgriManager-Framework</span></a>
+          <a href="docs/index.html">Docs <span>documentation</span></a>
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow">Citation</p>
+        <div class="bib">
+<pre id="bibtex">@inproceedings{gui2026agrimanager,
+  title     = {AgriManager: A Framework and Benchmark for LLM-RL
+               Generalization in Agricultural Management},
+  author    = {Gui, Chi and Zheng, Junwen and Nigam, Ritwik and
+               Yang, Qianlan and Lang, Meagan and Dongre, Vardhan and
+               Barr, Jeremiah and Wang, Yu-Xiong and Adve, Vikram S.},
+  booktitle = {Advances in Neural Information Processing Systems
+               (Evaluations and Datasets Track)},
+  year      = {2026}
+}</pre>
+          <button type="button" id="bibCopy">Copy</button>
+        </div>
+      </div>
+    </div>
+    <div class="fine"><span class="fine-brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="292 177 1470 304" class="wordmark" role="img" aria-label="AgriManager" fill="none">
+  <path fill="var(--logo-green)" fill-rule="evenodd" d="M540,341 L539,340 L531,342 L521,342 L520,343 L497,344 L496,345 L470,347 L448,353 L432,361 L418,372 L407,384 L395,402 L382,428 L382,431 L394,419 L408,408 L437,392 L463,383 L479,380 L481,382 L458,391 L444,398 L427,409 L412,421 L395,438 L386,449 L387,450 L402,447 L432,446 L433,445 L452,443 L469,438 L487,428 L506,410 L515,397 L528,371 Z M968,297 L967,298 L967,387 L968,388 L990,388 L991,387 L991,298 L990,297 Z M955,296 L944,295 L937,297 L930,301 L923,309 L921,308 L921,298 L920,297 L898,297 L897,298 L897,387 L898,388 L921,388 L922,387 L922,339 L924,331 L933,321 L939,318 L944,317 L955,318 L956,317 L956,297 Z M880,297 L858,297 L857,298 L857,306 L855,307 L850,302 L841,297 L833,295 L821,295 L808,299 L802,303 L794,311 L787,326 L786,338 L785,339 L787,357 L793,370 L803,380 L813,385 L821,387 L838,386 L849,381 L856,376 L857,377 L857,387 L855,395 L847,404 L840,407 L828,408 L818,406 L807,401 L802,397 L791,414 L793,417 L804,423 L813,426 L818,426 L819,427 L844,427 L856,424 L864,420 L872,413 L879,400 L880,390 L881,389 L881,298 Z M827,316 L840,316 L845,318 L852,324 L857,335 L857,347 L853,357 L847,363 L840,366 L832,367 L831,366 L826,366 L820,363 L813,355 L811,349 L812,330 L814,326 L821,319 Z M707,261 L688,309 L684,322 L678,335 L674,348 L670,356 L666,369 L662,377 L661,382 L658,387 L659,388 L685,388 L687,386 L693,367 L697,362 L747,362 L750,366 L756,385 L758,388 L784,388 L785,386 L758,318 L756,310 L749,294 L738,263 L736,261 Z M721,292 L723,293 L737,331 L739,334 L740,338 L738,340 L705,340 L703,338 L713,313 L718,297 Z M975,253 L967,259 L965,263 L965,272 L968,277 L974,281 L984,281 L988,279 L993,273 L994,269 L993,262 L990,257 L986,254 Z M327,449 L327,451 L357,451 L369,421 L384,392 L399,371 L415,355 L443,338 L470,284 L470,282 L474,276 L474,274 L478,267 L481,265 L484,268 L511,324 L511,326 L513,328 L516,327 L531,327 L532,326 L547,326 L548,325 L559,325 L561,327 L550,356 L538,383 L538,387 L552,414 L552,416 L568,449 L571,451 L634,451 L635,450 L556,289 L556,287 L543,262 L543,260 L521,216 L521,214 L515,208 L512,207 L453,207 L446,212 Z"/>
+  <path fill="var(--logo-navy)" fill-rule="evenodd" d="M1726,296 L1714,295 L1706,297 L1699,301 L1692,309 L1690,308 L1690,298 L1689,297 L1667,297 L1666,298 L1666,387 L1667,388 L1689,388 L1690,387 L1690,337 L1692,331 L1701,321 L1711,317 L1724,317 L1726,318 L1727,317 L1727,297 Z M1588,299 L1581,303 L1572,311 L1564,326 L1563,336 L1562,337 L1562,348 L1563,349 L1564,359 L1569,370 L1581,382 L1586,385 L1600,389 L1622,389 L1633,386 L1639,383 L1649,375 L1649,373 L1637,362 L1635,362 L1629,367 L1623,370 L1604,371 L1596,367 L1588,358 L1586,350 L1588,348 L1654,348 L1655,347 L1655,334 L1652,322 L1648,314 L1636,302 L1625,297 L1615,295 L1604,295 Z M1586,332 L1589,324 L1596,317 L1606,313 L1617,314 L1623,317 L1629,323 L1632,330 L1632,332 L1629,335 L1591,335 Z M1551,297 L1529,297 L1528,298 L1528,306 L1526,307 L1514,298 L1502,295 L1494,295 L1493,296 L1488,296 L1476,301 L1465,311 L1460,320 L1457,331 L1457,352 L1459,360 L1467,374 L1474,380 L1488,386 L1508,386 L1512,385 L1520,381 L1526,376 L1528,377 L1529,384 L1528,385 L1528,391 L1525,398 L1519,404 L1512,407 L1507,408 L1491,407 L1479,402 L1474,398 L1472,398 L1462,414 L1464,417 L1473,422 L1491,427 L1514,427 L1523,425 L1533,421 L1544,411 L1549,402 L1552,388 L1552,298 Z M1501,315 L1508,315 L1517,318 L1525,326 L1529,338 L1528,350 L1526,355 L1518,363 L1508,367 L1500,367 L1491,363 L1485,357 L1481,348 L1481,335 L1485,325 L1491,319 Z M1367,305 L1366,308 L1372,321 L1375,321 L1380,318 L1393,314 L1410,314 L1417,317 L1420,320 L1422,324 L1422,331 L1419,334 L1387,336 L1376,339 L1367,344 L1361,352 L1359,361 L1360,371 L1364,379 L1369,384 L1381,389 L1400,389 L1410,386 L1421,378 L1423,380 L1423,387 L1424,388 L1444,388 L1445,387 L1445,376 L1446,375 L1445,373 L1446,371 L1445,369 L1446,364 L1445,360 L1445,319 L1440,308 L1436,304 L1425,298 L1409,295 L1398,295 L1397,296 L1386,297 L1374,301 Z M1422,349 L1422,360 L1420,364 L1412,371 L1400,374 L1390,373 L1382,365 L1382,359 L1389,351 L1401,348 L1415,348 L1416,347 L1420,347 Z M1338,303 L1332,299 L1324,296 L1310,295 L1298,298 L1284,308 L1283,307 L1283,298 L1282,297 L1260,297 L1259,298 L1259,387 L1260,388 L1282,388 L1283,387 L1283,331 L1286,325 L1292,319 L1299,316 L1311,316 L1317,319 L1322,325 L1324,332 L1324,387 L1325,388 L1347,388 L1348,387 L1348,326 L1345,313 Z M1168,304 L1166,306 L1166,308 L1170,318 L1173,322 L1177,319 L1192,314 L1210,314 L1217,317 L1221,321 L1222,331 L1219,334 L1194,335 L1193,336 L1182,337 L1168,343 L1161,351 L1159,357 L1159,369 L1163,379 L1170,385 L1181,389 L1200,389 L1213,384 L1220,378 L1222,379 L1222,387 L1223,388 L1244,388 L1245,387 L1245,319 L1240,308 L1230,300 L1222,297 L1211,296 L1210,295 L1197,295 L1196,296 L1185,297 L1181,299 L1178,299 Z M1222,349 L1221,363 L1215,369 L1209,372 L1199,374 L1190,373 L1186,371 L1182,366 L1183,356 L1191,350 L1200,348 L1216,348 L1217,347 L1220,347 Z M1011,262 L1011,387 L1012,388 L1033,388 L1034,387 L1034,310 L1035,309 L1038,311 L1069,376 L1087,376 L1089,374 L1099,351 L1121,308 L1123,309 L1123,387 L1125,388 L1143,388 L1147,387 L1147,269 L1146,268 L1147,262 L1146,261 L1118,261 L1116,263 L1079,342 L1076,340 L1069,323 L1041,263 L1039,261 L1012,261 Z"/>
+</svg>
+<span>NeurIPS 2026 Evaluations &amp; Datasets Track</span></span></div>
+  </div>
+</footer>
+<script src="data/site3.js?v=10270734"></script>
+<script src="assets/site3.js?v=10270734"></script>
+</body>
+</html>

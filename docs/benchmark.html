@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Benchmark · AgriManager</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+<script>(function () { try { var t = localStorage.getItem('agri-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="assets/style.css?v=20261025g" />
+</head>
+<body>
+<header class="top">
+  <button class="hbtn menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="index.html"><img class="logo" src="assets/logo-icon.svg" alt="" /> <span class="wm"><span class="wm-agri">Agri</span><span class="wm-mgr">Manager</span></span> <span class="sep">/</span> <span class="doctag">Docs</span></a>
+  <div class="spacer"></div>
+  <a class="hlink" id="siteLink" href="../">Website</a>
+  <a class="hlink" id="repoLink" href="https://github.com/AgriManager-Framework/AgriManager" target="_blank" rel="noopener">GitHub</a>
+  <button class="hbtn" id="themeBtn" aria-label="Toggle light or dark theme"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+</header>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="wrap">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <h1>Benchmark</h1>
+    <p class="subtitle">A three-tier generalization ladder that asks how far a policy transfers.</p>
+
+    <p>
+      The AgriManager benchmark asks whether a prompt-conditioned LLM-RL policy generalizes across the
+      heterogeneity of agricultural management. It decomposes that question into a <b>three-tier ladder of eight
+      settings</b>, with a shared evaluation protocol, where each tier widens the gap between training and test.
+      Every setting is scored on a frozen <a href="test-suite.html">held-out test suite</a> with three training
+      seeds per arm.
+    </p>
+
+    <p class="tier-lead">Each tier changes more of the task interface between training and test.</p>
+    <div class="tcards" role="group" aria-label="The three tiers">
+      <article class="tcard t1">
+        <header><span class="tn">Tier 1</span><h4>Within Schema</h4></header>
+        <p class="tc-farm">Weather, crop traits, or prices vary under the same task schema.</p>
+        <p class="tc-formal2">(O, A, R) unchanged · context changes (weather, crop, prices)</p>
+        <div class="tc-elig"><span class="elig ok"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".16"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Fixed-interface NN</span><span class="elig ok"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".16"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>LLM</span></div>
+      </article>
+      <article class="tcard t2">
+        <header><span class="tn">Tier 2</span><h4>Single-Axis Schema</h4></header>
+        <p class="tc-farm">One of measurements, management options, or goals changes.</p>
+        <p class="tc-formal2">One of O, A, R changes (action menus also bring their own environment wrappers)</p>
+        <div class="tc-elig"><span class="elig no"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".16"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Fixed-interface NN</span><span class="elig ok"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".16"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>LLM</span></div>
+      </article>
+      <article class="tcard t3">
+        <header><span class="tn">Tier 3</span><h4>Compositional Schema</h4></header>
+        <p class="tc-farm">Across farms, measurements, management options, and goals differ.</p>
+        <p class="tc-formal2">Several of O, A, R change; dynamics P may change too</p>
+        <div class="tc-elig"><span class="elig no"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".16"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Fixed-interface NN</span><span class="elig ok"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".16"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>LLM</span></div>
+      </article>
+    </div>
+    <p class="tier-note" style="font-size:.86rem;color:var(--muted)">A fixed-interface neural network cannot run once a shift changes its input layout or action encoding. A
+       prompt-conditioned LLM re-reads the schema each episode.</p>
+
+    <h2 id="ladder">The three-tier ladder<a class="ah" href="#ladder">#</a></h2>
+    <ul>
+      <li><b>Tier 1 — Within Schema</b> (distributional shift). The schema is fixed; only the episode context (weather, crop, prices) varies.</li>
+      <li><b>Tier 2 — Single-Axis Schema.</b> One of the observation <code>Σ_O</code>, action menu <code>Σ_A</code>, or reward formulation <code>Σ_R</code> changes between train and test.</li>
+      <li><b>Tier 3 — Compositional Schema.</b> Several schema components change at once; the cross-simulator cases also change the dynamics <code>P</code> across DSSAT, WOFOST, and Cycles.</li>
+    </ul>
+
+    <h2 id="settings">The eight settings<a class="ah" href="#settings">#</a></h2>
+    <p><i>Scenarios</i> gives training configurations × training rows per configuration / held-out test rows.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Setting</th><th>Varies</th><th>Train&nbsp;→&nbsp;Test</th><th>Objective</th><th>Scenarios</th></tr>
+        <tr><td colspan="5" style="background:var(--code-bg);font-weight:600">Tier 1 — Within Schema</td></tr>
+        <tr><td><b>weather-regime</b></td><td>weather</td><td>normal weather → drought, wet, hot, cold</td><td>profit</td><td>2×1,600 / 1,280</td></tr>
+        <tr><td><b>crop-variety</b></td><td>crop variety</td><td>4 / 8 / 16 seen crops → 4 held-out crops</td><td>profit</td><td>3×1,600 / 1,024</td></tr>
+        <tr><td><b>price-regime</b></td><td>prices</td><td>non-dominant band → high-corn, high-soy</td><td>gross revenue</td><td>1,600 / 384</td></tr>
+        <tr><td colspan="5" style="background:var(--code-bg);font-weight:600">Tier 2 — Single-Axis Schema</td></tr>
+        <tr><td><b>observation-schema</b></td><td><code>Σ_O</code></td><td>full schema → subset, rename, superset, anonymized</td><td>profit</td><td>1,600 / 1,024</td></tr>
+        <tr><td><b>action-menu</b></td><td><code>Σ_A</code></td><td>A: <code>lnpkw</code>, <code>lnpk</code> → <code>lnw</code>, <code>ln</code>, <code>lw</code>; B: <code>lnpk</code>, <code>lw</code> → <code>lnpkw</code>, <code>lnw</code>, <code>ln</code></td><td>profit</td><td>2×1,600 / 512</td></tr>
+        <tr><td><b>reward-formulation</b></td><td><code>Σ_R</code></td><td>multi-objective (yield, profit, water) or yield only → yield, profit, water, nutrient</td><td>varies</td><td>1,600+1,602 / 512</td></tr>
+        <tr><td colspan="5" style="background:var(--code-bg);font-weight:600">Tier 3 — Compositional Schema (DSSAT · WOFOST · Cycles)</td></tr>
+        <tr><td><b>cross-simulator</b></td><td><code>Σ × P</code></td><td>one source simulator → 3×3 source–target pairs</td><td>profit</td><td>3×1,600 / 386</td></tr>
+        <tr><td><b>unified policy</b></td><td><code>Σ_O × Σ_A × Σ_R × Sim</code></td><td>seen schema tuples → held-out combinations</td><td>varies</td><td>3,200 / 1,156</td></tr>
+      </table>
+    </div>
+
+    <h2 id="references">Baselines &amp; references<a class="ah" href="#references">#</a></h2>
+    <p>The target policy is prompt-conditioned LLM-RL, in think and no-think variants. It is compared against:</p>
+    <ul>
+      <li><b>The untrained model</b> — the same backbone before RL, scored under both response formats on the same test scenarios.</li>
+      <li><b>Neural-network PPO</b> — Stable-Baselines3 PPO over the numerical observation, with the interaction budget of LLM-RL and its one gradient pass per batch. This fixed-interface network applies to the Tier 1 settings; potato weather-regime adds DQN and A2C, and the action-menu setting adds MaskablePPO over a shared action vocabulary and PPO trained on each test menu.</li>
+      <li><b>Scripted agronomic reference</b> — a fixed rule set per simulator codified from agronomic guidance, such as crop-stage fertilizer and irrigation rules on WOFOST and a corn–soybean rotation for Cycles crop planning. It is uncalibrated against experts or optimal control and marks codified practice.</li>
+      <li><b>No-action</b> — the zero-action control; on the fertilizer and irrigation tasks it applies no input, so falling below it is worse than abstaining.</li>
+    </ul>
+
+    <h2 id="metric">Normalized return<a class="ah" href="#metric">#</a></h2>
+    <p>Normalized return places a policy relative to the two references, both scored on the same scenarios:</p>
+    <div class="code plain">
+      <div class="code-head"><span>normalized return</span></div>
+<pre>R̃(π) = ( R(π) − R_no-action ) / | R_ref − R_no-action |
+
+   R̃ = 0  →  matches no-action
+   R̃ = ±1 →  matches the scripted agronomic reference
+   R̃ &gt; 1  →  exceeds the scripted agronomic reference</pre>
+    </div>
+    <p>The gap <code>R_ref − R_no-action</code> is used as a denominator only where the reference clears no-action by
+       at least a tenth of the think arm's gain over no-action on that target. Where it does not, the benchmark
+       reports the gain over no-action, <code>R(π) − R_no-action</code>. The gap varies across targets, so
+       compare policies by <code>R̃</code> only within a target. Raw returns, both reference returns and the gap are
+       published for every headline cell (<a href="reproduce.html">Reproducing the paper</a>).</p>
+
+    <h2 id="disclosures">Known limits of the references<a class="ah" href="#disclosures">#</a></h2>
+    <ul>
+      <li><b>Weather-regime cannot be normalized.</b> On its test splits the scripted reference sits at or below
+        no-action (gap −0.148 to +0.017, below zero on 8 of 10 crop–split targets), so this setting reports the gain
+        over no-action.</li>
+      <li><b>On WOFOST the reference is a weak "1".</b> The untrained think model already scores above 1 on the
+        WOFOST settings. A normalized score of 5 means five times the gap between no-action and a conservative
+        schedule, with no optimality bound implied.</li>
+      <li><b>The submitted DSSAT reference values were set by hand.</b> No run or code survives for them. The final
+        numbers use a code reconstruction of the fixed DSSAT schedule, which reproduces the submitted input totals
+        (116 kg/ha N, 264 mm irrigation).</li>
+      <li><b>The current Cycles reference degenerates to no-action on crop growth.</b> The current
+        <code>ag_heuristic</code> code has no nitrogen rule on the Cycles maize task. The paper uses the first
+        implementation, which reproduces the submitted reference exactly; see
+        <a href="evaluation.html#references">Evaluation</a> for how each paper reference is run.</li>
+      <li><b>The Cycles crop-growth test suites were rebuilt</b> from unused weather years after the first build was
+        found to repeat the validation years; see <a href="test-suite.html#notes">Held-out test suite</a>.</li>
+    </ul>
+
+    <h2 id="findings">What the paper finds<a class="ah" href="#findings">#</a></h2>
+    <p>Confirmatory results are the three-seed test-suite results; results only on validation or from a single seed
+       are exploratory. In short, on the Qwen3-4B backbone:</p>
+    <ul>
+      <li><b>Tier 1 (Within Schema).</b> The think policy exceeds neural-network PPO with the same interaction budget and one gradient pass per batch on all three
+        settings (eight-pass PPO, in the appendix, matches it on crop-variety). No-think training stalls near
+        no-action where the reward penalizes input use. On price-regime, think and no-think are level.</li>
+      <li><b>Tier 2 (Single-Axis Schema).</b> Observation transfer needs decision-critical state: RL training does not help once the
+        resource-state fields are removed. Action-menu results are consistent with joint action-menu coverage. With
+        reasoning, a policy trained on yield alone transfers to unseen objectives, and multi-objective training adds
+        a little.</li>
+      <li><b>Tier 3 (Compositional Schema).</b> The unified policy learns DSSAT and approaches its specialist there; the per-simulator
+        specialists stay ahead on the WOFOST and Cycles profit targets. Single-source training mostly hurts
+        zero-shot transfer across simulators: four of six transfers score below the untrained model.</li>
+      <li><b>Reasoning.</b> The think/no-think ordering above holds on the Qwen backbones tested; a single-seed
+        Llama-3.2-3B pair reverses it.</li>
+    </ul>
+
+    <h2 id="setup">Setup<a class="ah" href="#setup">#</a></h2>
+    <p>
+      LLM-RL trains <b>Qwen3-4B-Instruct</b> with <b>GRPO</b> on VeRL; the neural-network PPO baseline trains <b>Stable-Baselines3 PPO</b> on
+      the numerical observation. The default objective is <code>profit_max</code> (terminal storage-organ yield minus
+      input costs), with per-setting reward overrides. Each arm trains three seeds and is scored at its terminal
+      checkpoint with greedy decoding; see <a href="rl-training.html#paper-runs">RL training</a> and
+      <a href="evaluation.html">Evaluation</a>.
+    </p>
+
+    <h2 id="ood">Tracking OOD generalization during training<a class="ah" href="#ood">#</a></h2>
+    <p>
+      To watch generalization to held-out conditions <em>live during training</em>, declare several named
+      validation sets along one <b>OOD axis</b>. AgriManager logs a separate curve per set, so an
+      in-distribution <code>id</code> set sits next to each OOD set. These curves are for monitoring and are
+      exploratory; they never select checkpoints. Two steps:
+    </p>
+
+    <p><b>1. At dataset build</b> — set the axis, and mark each held-out split as a validation set with an
+       axis label:</p>
+    <div class="code">
+      <div class="code-head"><span>yaml · dataset config</span><button class="copy">Copy</button></div>
+<pre>validation_axis: weather_regime          <span class="c"># the OOD axis</span>
+sampling:
+  splits:
+    train:                               <span class="c"># in-distribution training</span>
+      role: train
+      labels: { weather_regime: id }
+    val_id:                              <span class="c"># in-distribution validation</span>
+      role: validation
+      validation_set: id
+      labels: { weather_regime: id }
+    val_drought:                         <span class="c"># one held-out regime</span>
+      role: validation
+      validation_set: drought
+      labels: { weather_regime: drought }
+    <span class="c"># … val_wet, val_hot, val_cold likewise</span></pre>
+    </div>
+
+    <p><b>2. At train</b> — point <code>data.val_sets</code> at the built parquets and name the axis:</p>
+    <div class="code">
+      <div class="code-head"><span>bash · train</span><button class="copy">Copy</button></div>
+<pre><span class="o">bash</span> entrypoints/train/train.sh <span class="k">--config-name</span> agri_grpo <span class="k">\</span>
+  data.train_files=&lt;dir&gt;/train.parquet <span class="k">\</span>
+  data.val_files=null <span class="k">\</span>
+  data.validation_axis=weather_regime <span class="k">\</span>
+  +data.val_sets.id=&lt;dir&gt;/val_id.parquet <span class="k">\</span>
+  +data.val_sets.drought=&lt;dir&gt;/val_drought.parquet <span class="k">\</span>
+  <span class="c"># … +data.val_sets.{wet,hot,cold}=…</span></pre>
+    </div>
+
+    <p>
+      Training then logs one generalization curve per set under
+      <code>val-*-weather_regime/&lt;set&gt;/…</code> (with a matching <code>train-*</code> mirror), so you read
+      the in-distribution <code>id</code> set against each held-out regime as training runs. The same two
+      keys work on any axis — <code>action_menu</code>, <code>reward_formulation</code>, or
+      <code>simulator</code>.
+    </p>
+
+    <div class="pagenav" id="pagenav"></div>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+<script src="assets/app.js?v=20261025f"></script>
+</body>
+</html>

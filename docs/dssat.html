@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DSSAT runtime · AgriManager</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+<script>(function () { try { var t = localStorage.getItem('agri-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="assets/style.css?v=20261025g" />
+</head>
+<body>
+<header class="top">
+  <button class="hbtn menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="index.html"><img class="logo" src="assets/logo-icon.svg" alt="" /> <span class="wm"><span class="wm-agri">Agri</span><span class="wm-mgr">Manager</span></span> <span class="sep">/</span> <span class="doctag">Docs</span></a>
+  <div class="spacer"></div>
+  <a class="hlink" id="siteLink" href="../">Website</a>
+  <a class="hlink" id="repoLink" href="https://github.com/AgriManager-Framework/AgriManager" target="_blank" rel="noopener">GitHub</a>
+  <button class="hbtn" id="themeBtn" aria-label="Toggle light or dark theme"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+</header>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="wrap">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <h1>DSSAT runtime</h1>
+    <p class="subtitle">Build the native DSSAT runtime for the DSSAT parts of the Tier 3 settings.</p>
+
+    <p>
+      The DSSAT parts of the cross-simulator (T3.1) and unified-policy (T3.2) settings run the DSSAT crop model through
+      <a href="https://gitlab.inria.fr/rgautron/gym_dssat_pdi" target="_blank" rel="noopener">gym-DSSAT</a>
+      (<code>gym_dssat_pdi</code>). Its native runtime is built with Spack and is not part of
+      <code>install.sh</code>. Skip this page if you only use WOFOST or Cycles. AgriManager ships the adapter
+      (<code>agrimanager/env/gym_dssat/</code>), dataset generators, configs and run scripts that drive the upstream
+      runtime; it does not ship DSSAT. The upstream guide is the
+      <a href="https://rgautron.gitlabpages.inria.fr/gym-dssat-docs/Installation/spack.html" target="_blank" rel="noopener">gym-DSSAT Spack installation page</a>.
+    </p>
+
+    <h2 id="platform">Requirements<a class="ah" href="#platform">#</a></h2>
+    <ul>
+      <li><b>Linux.</b> The Spack recipe is not reliable on macOS ARM64 (<code>zlib</code> and <code>libffi</code> can
+          fail against the Apple SDK).</li>
+      <li><b>Python 3.9–3.12 as the system <code>python3</code></b> to run Spack v0.19; it does not bootstrap under
+          Python 3.13. Spack builds its own Python 3.10 for DSSAT; AgriManager itself keeps running in its Python 3.12
+          environment.</li>
+      <li><b>GCC 11 with C, C++ and Fortran</b> (<code>gcc</code>, <code>g++</code>, <code>gfortran</code>). DSSAT is
+          Fortran. Newer compilers (for example GCC 13) fail on older dependencies such as <code>qhull@2020.1</code>.
+          No root access is needed: if your system has no GCC 11 <code>gfortran</code>, step 3 builds one with Spack.</li>
+      <li><b>A short path for Spack, at most 37 characters, in a directory named <code>spack</code></b> (for example
+          <code>$HOME/gd/spack</code> or <code>/opt/dssat/spack</code>). DSSAT reads its profile
+          <code>DSSATPRO.L48</code> in 80-column records, and each record holds the runtime path plus a model name.
+          With a longer path the model name is cut off and every episode fails (see
+          <a href="#problems">Common problems</a>). The recipe also rewrites paths only under a directory named
+          <code>spack</code>.</li>
+      <li><b>Local ZeroMQ sockets must be allowed.</b> Restricted sandboxes fail with
+          <code>Operation not permitted (src/ip_resolver.cpp:542)</code> even when the install is fine.</li>
+      <li><b>Time and disk.</b> Measured on 16 cores (2026-10-25): <code>spack install gym-dssat</code> took
+          21 minutes on a local SSD and 40 minutes on a cluster's NVMe-backed parallel file system; building GCC 11.3
+          first (step 3) adds about 14 minutes. The Spack directory takes 2 to 4 GB, plus Spack's build area in
+          <code>$TMPDIR</code>.</li>
+    </ul>
+
+    <h2 id="install">1. Install AgriManager first<a class="ah" href="#install">#</a></h2>
+    <p>Follow <a href="installation.html">Installation</a> (<code>install.sh --cpu</code> is enough for scripted
+       baselines; use <code>--gpu</code> to score language models). All commands below run from the AgriManager
+       repository root, with its Python environment active.</p>
+
+    <h2 id="spack">2. Get Spack and the package repositories<a class="ah" href="#spack">#</a></h2>
+    <p>Choose the Spack directory. Inside the checkout is the default that AgriManager finds without configuration,
+       provided the path is short enough:</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">export</span> SPACK_DIR=<span class="k">"$PWD/spack"</span>            <span class="c"># or a short path such as "$HOME/gd/spack"</span>
+<span class="o">echo</span> <span class="k">"${#SPACK_DIR} characters"</span>          <span class="c"># must be 37 or fewer</span>
+<span class="c"># keep Spack's user configuration next to it (by default Spack writes to ~/.spack)</span>
+<span class="o">export</span> SPACK_USER_CONFIG_PATH=<span class="k">"$(dirname "$SPACK_DIR")/.spack-user-config"</span>
+<span class="o">export</span> SPACK_USER_CACHE_PATH=<span class="k">"$(dirname "$SPACK_DIR")/.spack-user-cache"</span></pre>
+    </div>
+    <p>Set the same three variables again in every new shell that runs <code>spack</code>.</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">git clone</span> <span class="k">--branch</span> v0.19.0 <span class="k">-c</span> feature.manyFiles=true https://github.com/spack/spack.git <span class="k">"$SPACK_DIR"</span>
+<span class="o">source</span> <span class="k">"$SPACK_DIR/share/spack/setup-env.sh"</span>
+
+<span class="c"># PDI and gym-DSSAT package repositories, at the commits used for the paper</span>
+<span class="o">git clone</span> https://github.com/pdidev/spack.git <span class="k">"$SPACK_DIR/var/spack/repos/pdi"</span>
+<span class="o">git</span> <span class="k">-C</span> <span class="k">"$SPACK_DIR/var/spack/repos/pdi"</span> checkout 5bf8f6035c03bb0970d45e2931659dada3fba17e
+<span class="o">git clone</span> https://gitlab.inria.fr/rgautron/gym_dssat_pdi-spack.git <span class="k">"$SPACK_DIR/var/spack/repos/gym-dssat-pdi"</span>
+<span class="o">git</span> <span class="k">-C</span> <span class="k">"$SPACK_DIR/var/spack/repos/gym-dssat-pdi"</span> checkout 2bab78bd627707469581412cf3b51b270a19ae2b
+<span class="o">spack repo add</span> <span class="k">"$SPACK_DIR/var/spack/repos/pdi"</span>
+<span class="o">spack repo add</span> <span class="k">"$SPACK_DIR/var/spack/repos/gym-dssat-pdi"</span></pre>
+    </div>
+    <p>Pin the PDI repository. Its current head builds PDI 1.12, which does not compile with GCC 11.3
+       (<code>use of deleted function std::hash&lt;std::filesystem::path&gt;</code>); the pinned commit gives
+       PDI 1.11.0, the version the paper's runtime used.</p>
+
+    <h2 id="compiler">3. Choose the compiler<a class="ah" href="#compiler">#</a></h2>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">spack compiler find</span>
+<span class="o">spack compilers</span>
+<span class="o">grep</span> <span class="k">-E</span> <span class="k">"spec:|cxx:|fc:"</span> <span class="k">"$SPACK_USER_CONFIG_PATH"</span>/*/compilers.yaml</pre>
+    </div>
+    <p>Spack picks the newest GCC it finds unless told otherwise, and a GCC without <code>g++</code> or
+       <code>gfortran</code> fails on the first package (<code>Compiler 'gcc@12.3.0' does not have a C++ compiler
+       configured</code>). Pin a GCC 11 that has both <code>cxx</code> and <code>fc</code>:</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">spack config</span> <span class="k">--scope</span> user add <span class="k">"packages:all:compiler:[gcc@11.5.0]"</span>   <span class="c"># use your version</span></pre>
+    </div>
+    <p>If no GCC 11 entry has an <code>fc</code> (Fortran) path, build one with any GCC that has <code>g++</code>,
+       register it and pin it:</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">spack install</span> <span class="k">-j16</span> gcc@11.3.0 %gcc@11.4.0          <span class="c"># %gcc@&lt;a version with cxx&gt;; about 15 min on 16 cores</span>
+<span class="o">spack compiler find</span> <span class="k">"$(spack location -i gcc@11.3.0)"</span>
+<span class="o">spack config</span> <span class="k">--scope</span> user add <span class="k">"packages:all:compiler:[gcc@11.3.0]"</span></pre>
+    </div>
+
+    <h2 id="build">4. Build gym-DSSAT and its environment view<a class="ah" href="#build">#</a></h2>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">spack install</span> <span class="k">-j16</span> gym-dssat
+
+<span class="o">spack env create</span> gym-dssat-pdi <span class="k">"$SPACK_DIR/var/spack/repos/gym-dssat-pdi/env/spack.yaml"</span>
+<span class="o">spack env activate</span> gym-dssat-pdi
+<span class="o">spack concretize</span>
+<span class="o">spack env view regenerate</span>
+<span class="o">spack env deactivate</span>
+
+<span class="o">test</span> <span class="k">-x</span> <span class="k">"$SPACK_DIR/gym-dssat-pdi/bin/run_dssat"</span> <span class="k">&amp;&amp;</span> <span class="o">echo</span> "runtime found"</pre>
+    </div>
+    <p><code>spack concretize</code> reuses the packages from <code>spack install</code> and builds nothing new. The
+       view <code>$SPACK_DIR/gym-dssat-pdi</code> is the runtime directory AgriManager needs.</p>
+
+    <h2 id="bridge">5. Get the Python bridge<a class="ah" href="#bridge">#</a></h2>
+    <p>AgriManager imports the <code>gym_dssat_pdi</code> bridge from a source checkout, which carries the maize, rice
+       and cotton configurations used by the smoke tests (some Spack-built <code>gym-dssat-0.0.8</code> bridges are
+       maize-only).</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">mkdir</span> <span class="k">-p</span> ../AgriManagerExternal
+<span class="o">git clone</span> https://gitlab.inria.fr/rgautron/gym_dssat_pdi.git ../AgriManagerExternal/gym_dssat_pdi
+<span class="o">git</span> <span class="k">-C</span> ../AgriManagerExternal/gym_dssat_pdi checkout 63f2c529e0bd339b4553beb9aa56d56af83b5e2b</pre>
+    </div>
+    <p>The bridge talks to the simulator over ZeroMQ. <code>install.sh --gpu</code> already installs
+       <code>pyzmq</code>; after <code>install.sh --cpu</code>, add it to the AgriManager environment:</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">pip install</span> pyzmq==27.1.0</pre>
+    </div>
+    <p>The paper's runs used <code>gym-dssat</code> 0.0.8, <code>gym_dssat_pdi</code> commit
+       <code>63f2c529e0bd339b4553beb9aa56d56af83b5e2b</code>, <code>dssat-pdi</code> 4.8.0.24_2 and PDI 1.11.0.</p>
+
+    <h2 id="connect">6. Connect AgriManager<a class="ah" href="#connect">#</a></h2>
+    <p>In each shell that runs DSSAT settings, with the AgriManager environment active:</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">export</span> DSSAT_GYM_PATH=<span class="k">"$SPACK_DIR/gym-dssat-pdi"</span>   <span class="c"># can be left unset if SPACK_DIR is ./spack</span>
+<span class="o">source</span> smoke_tests/gym_dssat/_activate_spack.sh</pre>
+    </div>
+    <p>The helper finds the bridge in <code>../AgriManagerExternal/gym_dssat_pdi</code> (set
+       <code>DSSAT_PDI_BRIDGE_DIR</code> to <code>&lt;checkout&gt;/gym-dssat-pdi</code> if it lives elsewhere), adds the
+       DSSAT library paths and keeps your Python 3.12 interpreter first. Set
+       <code>AGRI_DSSAT_ENABLE_SPACK_ACTIVATE=1</code> if you want it to activate the Spack environment as well (this
+       needs Spack in <code>./spack</code>).</p>
+
+    <h2 id="verify">7. Verify<a class="ah" href="#verify">#</a></h2>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">test</span> <span class="k">-x</span> <span class="k">"$DSSAT_GYM_PATH/bin/run_dssat"</span> <span class="k">&amp;&amp;</span> <span class="o">echo</span> "runtime found"
+
+<span class="c"># live runtime check: imports the bridge, builds DSSATEnv and calls reset() with a timeout</span>
+<span class="o">bash</span> smoke_tests/gym_dssat/run_runtime_smoke.sh <span class="k">--crop</span> maize <span class="k">--timeout</span> 240
+
+<span class="c"># smallest DSSAT dataset build (CPU)</span>
+<span class="o">bash</span> smoke_tests/gym_dssat/run_build_datasets.sh maize</pre>
+    </div>
+    <p>A working runtime prints <code>DSSAT_RUNTIME_SMOKE_STAGE reset_ok</code> and <code>DSSAT_RUNTIME_SMOKE_OK</code>
+       within a few seconds. <code>run_runtime_smoke.sh</code> also accepts <code>--crop rice</code> and
+       <code>--crop cotton</code>.</p>
+
+    <h3 id="anchors">Check against the paper<a class="ah" href="#anchors">#</a></h3>
+    <p>Build the two T3.2 DSSAT test-suite splits (building needs no DSSAT runtime) and score the scripted anchors on
+       them:</p>
+    <div class="code">
+      <div class="code-head"><span>bash · CPU</span><button class="copy">Copy</button></div>
+<pre><span class="o">bash</span> experiments/rebuttal_confirmatory_eval/run_build_t32_dssat_eval_suite.sh
+<span class="o">bash</span> experiments/rebuttal_confirmatory_eval/run_build_t32_dssat_yield_eval_suite.sh
+OUT_ROOT=<span class="k">$PWD/anchors_dssat</span> JOBS=<span class="k">3</span> <span class="o">bash</span> experiments/rebuttal_confirmatory_eval/run_e4_anchors.sh</pre>
+    </div>
+    <p><code>run_e4_anchors.sh</code> scores every suite under <code>experiments/rebuttal_confirmatory_eval/data/</code>;
+       with only the DSSAT suites built it takes about four minutes on three cores. The means in
+       <code>anchors_dssat/&lt;mode&gt;/&lt;suite&gt;/test/metrics.json</code> should match the DSSAT rows of
+       <code>results/tables/e4_anchors.csv</code>: on <code>e4_t32_dssat_profit</code>, no-action 1.07375 and the
+       paper's scripted reference (<code>paper_sim_heuristic</code>) 7.35868; the current <code>ag_heuristic</code>
+       gives 4.12322. The T3.1 DSSAT split holds the same 128 scenarios (<code>run_build_t31_eval_suite.sh</code>
+       builds it together with the WOFOST split, which needs the maize weather pool).</p>
+    <p>DSSAT is deterministic for a given build, but different compilers and CPUs can round its single-precision
+       state differently. Two fresh builds on 2026-10-25, each scoring the three scripted policies on all three DSSAT
+       splits (3 × 3 × 128 scenario returns):</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Build</th><th>Bit-identical to the paper's runs</th><th>Largest difference</th></tr>
+        <tr><td>RHEL 9, system GCC 11.5</td><td>1,152 of 1,152</td><td>none</td></tr>
+        <tr><td>Ubuntu 22.04, GCC 11.3 built by Spack</td><td>1,140 of 1,152</td><td>1.2e-7 relative (the same 4 scenarios on each split); means unchanged to eight significant digits</td></tr>
+      </table>
+    </div>
+    <p>GPU smoke tests (a short GRPO run and model evaluation) are listed in
+       <code>smoke_tests/gym_dssat/README.md</code>.</p>
+
+    <h2 id="problems">Common problems<a class="ah" href="#problems">#</a></h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Symptom</th><th>Fix</th></tr>
+        <tr><td><code>SbangPathError: Install tree root is too long</code> while Spack bootstraps <code>clingo</code></td><td>the Spack directory path is too long; use a short <code>SPACK_DIR</code> (<a href="#spack">step 2</a>)</td></tr>
+        <tr><td><code>Compiler 'gcc@12.3.0' does not have a C++ compiler configured</code>, or a Fortran compiler is missing</td><td>pin a GCC 11 with <code>g++</code> and <code>gfortran</code>, or build one (<a href="#compiler">step 3</a>)</td></tr>
+        <tr><td>PDI fails with <code>use of deleted function 'std::hash&lt;std::filesystem::__cxx11::path&gt;::hash()'</code></td><td>the PDI repository is not pinned; check out the commit in <a href="#spack">step 2</a> and run <code>spack install</code> again</td></tr>
+        <tr><td>the runtime smoke test times out at <code>construct_start</code> or <code>reset_start</code>, and the newest file in <code>$DSSAT_GYM_PATH/dssat_logs/</code> says <code>Crop code incompatible with model specified ... DSSATPRO.L48 ... Error key: MODELN</code></td><td>the Spack path is longer than 37 characters, so the model names in <code>DSSATPRO.L48</code> are cut off at column 80; rebuild in a shorter <code>SPACK_DIR</code> (Spack installs cannot be moved)</td></tr>
+        <tr><td><code>ModuleNotFoundError: No module named 'zmq'</code></td><td><code>pip install pyzmq==27.1.0</code> in the AgriManager environment (<a href="#bridge">step 5</a>)</td></tr>
+        <tr><td><code>run_dssat</code> missing</td><td>re-run <code>spack install</code> and <code>spack env view regenerate</code> inside the <code>gym-dssat-pdi</code> environment, then check <code>DSSAT_GYM_PATH</code></td></tr>
+        <tr><td><code>import gym_dssat_pdi</code> fails</td><td><code>source smoke_tests/gym_dssat/_activate_spack.sh</code> before the command; set <code>DSSAT_PDI_BRIDGE_DIR</code></td></tr>
+        <tr><td>Ray reports a socket path that is too long</td><td><code>export RAY_LOG_DIR=$HOME/ray</code></td></tr>
+        <tr><td>LLM evaluation says required arguments are missing</td><td>run the wrapper script, for example <code>bash smoke_tests/gym_dssat/run_llm_eval_qwen3_4b_instruct.sh maize</code></td></tr>
+      </table>
+    </div>
+    <p>When the runtime smoke test times out, read the newest file in <code>$DSSAT_GYM_PATH/dssat_logs/</code> first:
+       DSSAT stops at an error prompt and the Python side waits, so the error is only in that log. When reporting a
+       DSSAT problem, include the failing command, the value of <code>DSSAT_GYM_PATH</code>, whether
+       <code>bin/run_dssat</code> exists there, and the last lines of that log.</p>
+    <div class="note">
+      <span class="nt">Tested 2026-10-25</span>
+      <p>These steps were followed from a fresh release snapshot on Ubuntu 22.04 (system GCC 11.4 without Fortran, so
+      step 3 built GCC 11.3) and on RHEL 9 (system GCC 11.5 with Fortran). The runtime smoke tests for maize, rice and
+      cotton, the maize dataset build and the anchor check above all passed.</p>
+    </div>
+
+    <div class="pagenav" id="pagenav"></div>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+<script src="assets/app.js?v=20261025f"></script>
+</body>
+</html>

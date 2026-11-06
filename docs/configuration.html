@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Configuration · AgriManager</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+<script>(function () { try { var t = localStorage.getItem('agri-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="assets/style.css?v=20261025g" />
+</head>
+<body>
+<header class="top">
+  <button class="hbtn menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="index.html"><img class="logo" src="assets/logo-icon.svg" alt="" /> <span class="wm"><span class="wm-agri">Agri</span><span class="wm-mgr">Manager</span></span> <span class="sep">/</span> <span class="doctag">Docs</span></a>
+  <div class="spacer"></div>
+  <a class="hlink" id="siteLink" href="../">Website</a>
+  <a class="hlink" id="repoLink" href="https://github.com/AgriManager-Framework/AgriManager" target="_blank" rel="noopener">GitHub</a>
+  <button class="hbtn" id="themeBtn" aria-label="Toggle light or dark theme"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+</header>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="wrap">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <h1>Configuration</h1>
+    <p class="subtitle">Most config comes from VeRL — here are the keys you set, plus the ones AgriManager adds.</p>
+
+    <p>
+      AgriManager is configured with <b>YAML files</b> plus <b>Hydra</b> command-line overrides. Every run is
+      defined by a config; the command line only adjusts it. There are no hidden argparse flags.
+    </p>
+
+    <h2 id="layers">Config layers<a class="ah" href="#layers">#</a></h2>
+    <p>A training config is three layers, each overriding the one below:</p>
+    <ul>
+      <li><b>VeRL base</b> — <code>ppo_trainer</code> (from the VeRL submodule): every RL and training default.</li>
+      <li><b>AgriManager defaults</b> — <code>agri_grpo</code> (default) or <code>agri_ppo</code>: override some VeRL
+        defaults and add the AgriManager-only keys.</li>
+      <li><b>CLI overrides</b> — Hydra <code>key=value</code> on the command line: per-run tweaks.</li>
+    </ul>
+    <p>So most keys you see are VeRL's — AgriManager only overrides a few and adds a few. Pick a config with
+       <code>--config-name</code>, then override any field:</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">bash</span> entrypoints/train/train.sh <span class="k">\</span>
+  <span class="k">--config-name</span> agri_grpo <span class="k">\</span>
+  actor_rollout_ref.model.path=Qwen/Qwen2.5-3B-Instruct <span class="k">\</span>
+  trainer.experiment_name=my_experiment <span class="k">\</span>
+  trainer.total_epochs=1</pre>
+    </div>
+
+    <h2 id="where">Where configs live<a class="ah" href="#where">#</a></h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Kind</th><th>Location</th></tr>
+        <tr><td>Dataset configs &amp; examples</td><td><code>entrypoints/dataset/examples/</code></td></tr>
+        <tr><td>Training configs</td><td><code>entrypoints/train/config/</code> — <code>agri_grpo.yaml</code> (default), <code>agri_ppo.yaml</code>, <code>nn.yaml</code></td></tr>
+        <tr><td>Evaluation configs</td><td><code>entrypoints/eval/config/</code> — <code>default.yaml</code> (language models), <code>openrouter.yaml</code>, <code>nn.yaml</code>, and scripted policies: <code>no_action</code>, <code>random</code>, <code>ag_heuristic</code> (the scripted agronomic reference)</td></tr>
+        <tr><td>Model / provider configs</td><td><code>agrimanager/model_interface/configs/{openai,google,openrouter,vllm_offline,vllm_server}/</code></td></tr>
+      </table>
+    </div>
+
+    <h2 id="verl-keys">Common VeRL keys<a class="ah" href="#verl-keys">#</a></h2>
+    <p>The keys you set most often are inherited from VeRL. The important ones:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Key</th><th>What it sets</th><th>Default</th></tr>
+        <tr><td colspan="3" style="background:var(--code-bg);font-weight:600">Model &amp; rollout</td></tr>
+        <tr><td><code>actor_rollout_ref.model.path</code></td><td>policy model to train</td><td><code>Qwen/Qwen3-4B-Instruct-2507</code></td></tr>
+        <tr><td><code>actor_rollout_ref.rollout.n</code></td><td>rollouts sampled per prompt (the GRPO group)</td><td><code>4</code></td></tr>
+        <tr><td><code>actor_rollout_ref.rollout.gpu_memory_utilization</code></td><td>vLLM GPU-memory fraction</td><td><code>0.7</code></td></tr>
+        <tr><td><code>actor_rollout_ref.actor.optim.lr</code></td><td>actor learning rate</td><td><code>1e-6</code></td></tr>
+        <tr><td colspan="3" style="background:var(--code-bg);font-weight:600">Data</td></tr>
+        <tr><td><code>data.train_files</code> · <code>data.val_files</code></td><td>dataset parquet paths</td><td>—</td></tr>
+        <tr><td><code>data.max_response_length</code></td><td>max generated tokens per turn</td><td><code>512</code></td></tr>
+        <tr><td colspan="3" style="background:var(--code-bg);font-weight:600">Algorithm</td></tr>
+        <tr><td><code>algorithm.adv_estimator</code></td><td>advantage estimator (<code>grpo</code> / <code>gae</code>)</td><td><code>grpo</code></td></tr>
+        <tr><td colspan="3" style="background:var(--code-bg);font-weight:600">Trainer</td></tr>
+        <tr><td><code>trainer.total_epochs</code></td><td>training epochs</td><td><code>2</code></td></tr>
+        <tr><td><code>trainer.n_gpus_per_node</code> · <code>trainer.nnodes</code></td><td>compute resources</td><td><code>1</code> · <code>1</code></td></tr>
+        <tr><td><code>trainer.save_freq</code> · <code>trainer.test_freq</code></td><td>checkpoint / validation cadence (steps)</td><td><code>100</code> · <code>10</code></td></tr>
+        <tr><td><code>trainer.project_name</code> · <code>trainer.experiment_name</code></td><td>Weights &amp; Biases run naming</td><td>—</td></tr>
+      </table>
+    </div>
+    <p>
+      These — and the rest of the training stack (FSDP, KL, optimizer, sharding) — are documented in the
+      <a href="https://verl.readthedocs.io/en/latest/examples/config.html" target="_blank" rel="noopener">VeRL config reference</a>.
+      AgriManager does not redefine them.
+    </p>
+
+    <h2 id="agri-keys">AgriManager keys<a class="ah" href="#agri-keys">#</a></h2>
+    <p>On top of VeRL, AgriManager adds a small set of keys in the training config:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Key</th><th>What it does</th><th>Default</th></tr>
+        <tr><td><code>data.val_sets</code></td><td>named validation sets (name → parquet), logged as separate curves during training; see <a href="benchmark.html#ood">Benchmark</a></td><td><code>{}</code></td></tr>
+        <tr><td><code>data.validation_axis</code></td><td>OOD axis the validation metrics are grouped by</td><td><code>null</code></td></tr>
+        <tr><td><code>trainer.per_turn_training</code></td><td>expand each multi-turn trajectory into per-turn training samples</td><td><code>True</code></td></tr>
+        <tr><td><code>trainer.rollout_filter.enable</code></td><td>drop low-variance rollout groups, RAGEN-style; see <a href="rl-training.html">RL training</a></td><td><code>True</code></td></tr>
+        <tr><td><code>trainer.rollout_filter.metric</code> · <code>.value</code></td><td>filter metric · fraction of groups kept</td><td><code>reward_variance</code> · <code>0.9</code></td></tr>
+      </table>
+    </div>
+    <p>The PPO config (<code>agri_ppo</code>) adds <code>trainer.stepwise_advantage.enable</code> for cross-turn
+       stepwise GAE.</p>
+
+    <h2 id="env-keys">Environment keys (dataset config)<a class="ah" href="#env-keys">#</a></h2>
+    <div class="note info">
+      <span class="nt">Important</span>
+      <p>Anything that changes environment semantics is set in the <b>dataset config</b> (under <code>env:</code>) and
+      baked into each parquet row, so the same split always reconstructs the same environment. To change the
+      environment, edit the dataset config and rebuild. The one exception is the response format at evaluation: the
+      frozen test suite is built in the no-think format, and the evaluator applies each checkpoint's own format with
+      <code>data.env_config_overrides</code> and checks it with <code>data.assert_env_config</code>
+      (see <a href="evaluation.html">Evaluation</a>).</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Key</th><th>What it sets</th><th>Example</th></tr>
+        <tr><td><code>env_id</code></td><td>simulator variant + action menu <code>Σ_A</code></td><td><code>lnpkw-v0</code></td></tr>
+        <tr><td><code>objective_id</code></td><td>reward objective <code>Σ_R</code></td><td><code>profit_max</code></td></tr>
+        <tr><td><code>turn_num</code></td><td>max turns per episode</td><td><code>24</code></td></tr>
+        <tr><td><code>intvn_interval</code></td><td>days between interventions</td><td><code>10</code></td></tr>
+        <tr><td><code>require_think</code></td><td>think format (a short reasoning block before the answer) or no-think</td><td><code>false</code> (default)</td></tr>
+        <tr><td><code>think_tag</code> · <code>thinking_mode</code></td><td>tag of the reasoning block · the reasoning guidance in the prompt</td><td><code>tool_call</code> · <code>grounding_decision</code> (defaults)</td></tr>
+        <tr><td><code>llm_mode</code></td><td>text interface for language models; <code>false</code> builds the numeric datasets the NN baselines use</td><td><code>true</code></td></tr>
+        <tr><td><code>include_crop_traits</code></td><td>add crop traits to the prompt</td><td><code>false</code></td></tr>
+      </table>
+    </div>
+    <p>The observation, action, and reward schema variants (<code>Σ_O · Σ_A · Σ_R</code>) are configured here too —
+       see <a href="tasks.html">Tasks</a> for the full set.</p>
+
+    <h2 id="env-vars">Environment variables<a class="ah" href="#env-vars">#</a></h2>
+    <p>Provider API keys are read from the environment, only for the provider you use:</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">export</span> OPENAI_API_KEY=<span class="k">"sk-..."</span>          <span class="c"># OpenAI</span>
+<span class="o">export</span> GEMINI_API_KEY=<span class="k">"..."</span>             <span class="c"># Google Gemini</span>
+<span class="o">export</span> OPENROUTER_API_KEY=<span class="k">"sk-or-..."</span>   <span class="c"># OpenRouter</span></pre>
+    </div>
+    <p>The default <b>vLLM-offline</b> path needs no key. Training and evaluation log to <b>Weights &amp; Biases</b>;
+       run <code>wandb login</code> once if you want logging. To keep runs local, pass
+       <code>trainer.logger='["console"]'</code> to training, <code>wandb.enabled=false</code> to scripted-policy
+       evaluation, or set <code>WANDB_MODE=offline</code>.</p>
+    <p>Simulator locations, needed only when they differ from the defaults:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Variable</th><th>Default</th></tr>
+        <tr><td><code>WOFOST_GYM_PATH</code></td><td><code>../AgriManagerExternal/WOFOSTGym</code></td></tr>
+        <tr><td><code>CYCLES_GYM_PATH</code></td><td><code>../AgriManagerExternal/CyclesGym</code></td></tr>
+        <tr><td><code>DSSAT_GYM_PATH</code> · <code>DSSAT_PDI_BRIDGE_DIR</code></td><td><code>spack/gym-dssat-pdi</code> in the checkout (the Spack view that contains <code>bin/run_dssat</code>) · found automatically (see <a href="dssat.html">DSSAT runtime</a>)</td></tr>
+        <tr><td><code>HF_TOKEN</code></td><td>only to upload checkpoints or result bundles; public repositories need none</td></tr>
+      </table>
+    </div>
+
+    <div class="pagenav" id="pagenav"></div>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+<script src="assets/app.js?v=20261025f"></script>
+</body>
+</html>

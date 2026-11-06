@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Adding a new environment · AgriManager</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+<script>(function () { try { var t = localStorage.getItem('agri-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="assets/style.css?v=20261025g" />
+</head>
+<body>
+<header class="top">
+  <button class="hbtn menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="index.html"><img class="logo" src="assets/logo-icon.svg" alt="" /> <span class="wm"><span class="wm-agri">Agri</span><span class="wm-mgr">Manager</span></span> <span class="sep">/</span> <span class="doctag">Docs</span></a>
+  <div class="spacer"></div>
+  <a class="hlink" id="siteLink" href="../">Website</a>
+  <a class="hlink" id="repoLink" href="https://github.com/AgriManager-Framework/AgriManager" target="_blank" rel="noopener">GitHub</a>
+  <button class="hbtn" id="themeBtn" aria-label="Toggle light or dark theme"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+</header>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="wrap">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <h1>Adding a new environment</h1>
+    <p class="subtitle">Drop a four-file package into <code>agrimanager/env/</code> — there is no registry.</p>
+
+    <p>
+      Both dataset build and training resolve your environment by <em>folder name</em> —
+      <code>importlib.import_module("agrimanager.env.&lt;env_name&gt;")</code> — and discover your classes
+      automatically. Drop a new folder in, and it works.
+    </p>
+
+    <h2 id="contract">The four-file contract<a class="ah" href="#contract">#</a></h2>
+    <p>Create a package at <code>agrimanager/env/&lt;your_env&gt;/</code> with four files:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>File</th><th>What it provides</th></tr>
+        <tr><td><code>env.py</code></td><td>subclass of <code>BaseEnv</code> — <code>reset()</code>, <code>step(action)</code>, <code>system_prompt()</code></td></tr>
+        <tr><td><code>env_config.py</code></td><td>subclass of <code>BaseEnvConfig</code></td></tr>
+        <tr><td><code>prompt.py</code></td><td><code>parse_action_response(text) → Optional[int]</code></td></tr>
+        <tr><td><code>create_dataset.py</code></td><td>subclass of <code>BaseDatasetGenerator</code> plus a module-level <code>generate(config, output_dir)</code></td></tr>
+      </table>
+    </div>
+
+    <h2 id="interface">The core interface<a class="ah" href="#interface">#</a></h2>
+    <div class="code">
+      <div class="code-head"><span>python · agrimanager/env/base/env.py</span><button class="copy">Copy</button></div>
+<pre><span class="k">class</span> YourEnv(BaseEnv):
+    <span class="k">def</span> reset(self) -&gt; Tuple[Any, Dict]:
+        <span class="c"># return (obs, info) — obs is the first textual observation</span>
+        ...
+    <span class="k">def</span> step(self, action) -&gt; Tuple[Any, float, bool, Dict]:
+        <span class="c"># action arrives as the raw LLM string; parse it, step the simulator,</span>
+        <span class="c"># return (obs, reward, done, info) — a scalar reward on every turn</span>
+        ...
+    <span class="k">def</span> system_prompt(self) -&gt; str:
+        <span class="c"># the task plus the schema: observations, action menu, objective</span>
+        ...</pre>
+    </div>
+
+    <h2 id="plug-in">How an environment plugs in<a class="ah" href="#plug-in">#</a></h2>
+    <figure>
+      <div class="frame light-art">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 680" font-family="system-ui, sans-serif" role="img" aria-label="Dataset build to training env flow">
+          <defs><marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#888"/></marker></defs>
+          <text x="20" y="28" font-size="16" font-weight="600" fill="#222">Dataset build → training: how an env plugs in</text>
+          <text x="20" y="50" font-size="12.5" fill="#666">Two interfaces. The parquet is the seam — it carries env_name across them.</text>
+          <rect x="20" y="66" width="14" height="12" rx="2" fill="#f2f2f2" stroke="#999"/><text x="40" y="76" font-size="11" fill="#555">framework</text>
+          <rect x="116" y="66" width="14" height="12" rx="2" fill="#eaf5ea" stroke="#4a9450"/><text x="136" y="76" font-size="11" fill="#555">env code (you write this)</text>
+          <rect x="296" y="66" width="14" height="12" rx="2" fill="#fff5cf" stroke="#c9a227"/><text x="316" y="76" font-size="11" fill="#555">parquet (the contract)</text>
+          <text x="20" y="108" font-size="11" font-weight="700" fill="#888" letter-spacing="2">BUILD TIME</text>
+          <rect x="60" y="118" width="420" height="42" rx="6" fill="#f2f2f2" stroke="#999"/><text x="270" y="138" font-size="13" font-weight="600" text-anchor="middle" fill="#222">dataset config YAML</text><text x="270" y="153" font-size="11" text-anchor="middle" fill="#555">env_name + scenario parameters</text>
+          <line x1="270" y1="160" x2="270" y2="178" stroke="#888" stroke-width="1.4" marker-end="url(#arrB)"/>
+          <rect x="60" y="180" width="420" height="42" rx="6" fill="#f2f2f2" stroke="#999"/><text x="270" y="200" font-size="13" text-anchor="middle" font-family="monospace" fill="#222">entrypoints/dataset/build.sh</text><text x="270" y="215" font-size="11" text-anchor="middle" fill="#555">thin shell wrapper · calls the Python router</text>
+          <line x1="270" y1="222" x2="270" y2="240" stroke="#888" stroke-width="1.4" marker-end="url(#arrB)"/>
+          <rect x="60" y="242" width="420" height="48" rx="6" fill="#f2f2f2" stroke="#999"/><text x="270" y="262" font-size="13" text-anchor="middle" font-family="monospace" fill="#222">agrimanager.env.create_dataset.generate()</text><text x="270" y="279" font-size="11" text-anchor="middle" fill="#555">reads env_name · imports the env module dynamically</text>
+          <line x1="270" y1="290" x2="270" y2="308" stroke="#888" stroke-width="1.4" marker-end="url(#arrB)"/>
+          <rect x="60" y="310" width="420" height="48" rx="6" fill="#eaf5ea" stroke="#4a9450" stroke-width="1.5"/><text x="270" y="330" font-size="13" font-weight="600" text-anchor="middle" fill="#222">&lt;Env&gt;DatasetGenerator</text><text x="270" y="347" font-size="11" text-anchor="middle" fill="#555">subclass of BaseDatasetGenerator</text>
+          <rect x="520" y="242" width="360" height="116" rx="6" fill="#fafafa" stroke="#bbb" stroke-dasharray="4 3"/><text x="700" y="262" font-size="12" font-weight="600" text-anchor="middle" fill="#333">interface: BaseDatasetGenerator</text>
+          <text x="538" y="286" font-size="11" font-family="monospace" fill="#222">build_split_records(split)</text><text x="548" y="300" font-size="10" fill="#888">must implement — return env_configs</text>
+          <text x="538" y="322" font-size="11" font-family="monospace" fill="#222">_build_initial_prompt(env_config)</text><text x="548" y="336" font-size="10" fill="#888">override — domain system prompt</text>
+          <text x="538" y="352" font-size="11" font-family="monospace" fill="#222">splits()</text>
+          <line x1="270" y1="358" x2="270" y2="386" stroke="#888" stroke-width="1.4" marker-end="url(#arrB)"/>
+          <rect x="40" y="388" width="840" height="60" rx="8" fill="#fff5cf" stroke="#c9a227" stroke-width="2"/><text x="460" y="410" font-size="14" font-weight="700" text-anchor="middle" fill="#222">parquet artifact — train.parquet · val.parquet · test.parquet</text><text x="460" y="430" font-size="11" text-anchor="middle" font-family="monospace" fill="#333">each row: extra_info.interaction_kwargs.env_config = {env_name, …}</text>
+          <line x1="270" y1="448" x2="270" y2="478" stroke="#888" stroke-width="1.4" marker-end="url(#arrB)"/>
+          <text x="20" y="472" font-size="11" font-weight="700" fill="#888" letter-spacing="2">TRAINING TIME</text>
+          <rect x="60" y="482" width="420" height="42" rx="6" fill="#f2f2f2" stroke="#999"/><text x="270" y="502" font-size="13" text-anchor="middle" font-family="monospace" fill="#222">entrypoints/train/train.sh</text><text x="270" y="517" font-size="11" text-anchor="middle" fill="#555">launches agrimanager.adapter.trainer.main_ppo</text>
+          <line x1="270" y1="524" x2="270" y2="542" stroke="#888" stroke-width="1.4" marker-end="url(#arrB)"/>
+          <rect x="60" y="544" width="420" height="48" rx="6" fill="#f2f2f2" stroke="#999"/><text x="270" y="564" font-size="13" font-weight="600" text-anchor="middle" fill="#222">AgriInteraction (adapter)</text><text x="270" y="581" font-size="11" text-anchor="middle" fill="#555">per row: reads env_name · calls create_environment(…)</text>
+          <line x1="270" y1="592" x2="270" y2="610" stroke="#888" stroke-width="1.4" marker-end="url(#arrB)"/>
+          <rect x="60" y="612" width="420" height="48" rx="6" fill="#eaf5ea" stroke="#4a9450" stroke-width="1.5"/><text x="270" y="632" font-size="13" font-weight="600" text-anchor="middle" fill="#222">&lt;Env&gt; instance</text><text x="270" y="649" font-size="11" text-anchor="middle" fill="#555">adapter drives it turn-by-turn via step(action_text)</text>
+          <rect x="520" y="544" width="360" height="116" rx="6" fill="#fafafa" stroke="#bbb" stroke-dasharray="4 3"/><text x="700" y="564" font-size="12" font-weight="600" text-anchor="middle" fill="#333">interface: BaseEnv</text>
+          <text x="538" y="590" font-size="11" font-family="monospace" fill="#222">reset() → (obs, info)</text>
+          <text x="538" y="612" font-size="11" font-family="monospace" fill="#222">step(action) → (obs, reward, done, info)</text>
+          <text x="538" y="634" font-size="11" font-family="monospace" fill="#222">system_prompt() → str</text>
+          <text x="538" y="652" font-size="10" fill="#888">action arrives as text · reward is a scalar per turn</text>
+        </svg>
+      </div>
+      <figcaption><b>The parquet is the contract.</b> A dataset row carries <code>env_name</code>; build time routes to your <code>create_dataset.py</code>, training time routes to your <code>env.py</code> — with no central registry in between.</figcaption>
+    </figure>
+
+    <h2 id="steps">Steps<a class="ah" href="#steps">#</a></h2>
+    <ol>
+      <li><b>Maintain the simulator externally</b> under <code>../AgriManagerExternal/&lt;env&gt;</code>; AgriManager only integrates it.</li>
+      <li><b>Create the four-file package</b> in <code>agrimanager/env/&lt;your_env&gt;/</code>, mirroring <code>wofost_gym/</code>.</li>
+      <li><b>Export your classes</b> in the package <code>__init__.py</code>'s <code>__all__</code> — this is how discovery finds them.</li>
+      <li><b>Stamp <code>env_name</code></b> into every parquet row's <code>env_config</code>. That is the registration.</li>
+      <li><b>Write a dataset config</b> with <code>env_name</code> + <code>dataset_id</code>, then run <code>entrypoints/dataset/build.sh</code>.</li>
+      <li><b>(Optional) add <code>nn_adapter.py</code></b> with a <code>BaseNNEnvAdapter</code> for the neural-network PPO baseline.</li>
+      <li><b>Smoke-test it</b> — copy <code>smoke_tests/wofost_gym/</code>, swap the env name, and run the build/train/eval scripts.</li>
+    </ol>
+    <div class="note">
+      <span class="nt">Runtime contract</span>
+      <p>Return a <b>scalar reward every turn</b>. If your env is trajectory-rewarded, emit <code>0</code> on early
+      turns and the trajectory reward on the final turn. The action menu rendered in your prompt and
+      <code>parse_action_response()</code> must stay mutually consistent.</p>
+    </div>
+    <div class="note warn">
+      <span class="nt">Boundary rules</span>
+      <p>No <code>if env_name == …</code> branches anywhere — dispatch always goes through
+      <code>create_environment()</code>. Never modify <code>verl/</code> for an env integration. Hand-run tooling
+      (asset generation, baselines, analyses) belongs in <code>integrations/&lt;env&gt;/</code>.</p>
+    </div>
+
+    <div class="pagenav" id="pagenav"></div>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+<script src="assets/app.js?v=20261025f"></script>
+</body>
+</html>

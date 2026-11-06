@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Supported models & algorithms · AgriManager</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+<script>(function () { try { var t = localStorage.getItem('agri-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="assets/style.css?v=20261025g" />
+</head>
+<body>
+<header class="top">
+  <button class="hbtn menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="index.html"><img class="logo" src="assets/logo-icon.svg" alt="" /> <span class="wm"><span class="wm-agri">Agri</span><span class="wm-mgr">Manager</span></span> <span class="sep">/</span> <span class="doctag">Docs</span></a>
+  <div class="spacer"></div>
+  <a class="hlink" id="siteLink" href="../">Website</a>
+  <a class="hlink" id="repoLink" href="https://github.com/AgriManager-Framework/AgriManager" target="_blank" rel="noopener">GitHub</a>
+  <button class="hbtn" id="themeBtn" aria-label="Toggle light or dark theme"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+</header>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="wrap">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <h1>Supported models &amp; algorithms</h1>
+    <p class="subtitle">What you can plug in, what the paper ran, and how to switch.</p>
+
+    <p>
+      AgriManager trains language-model policies on <a href="https://github.com/volcengine/verl" target="_blank" rel="noopener">VeRL</a>
+      (<a href="https://verl.readthedocs.io/en/latest/" target="_blank" rel="noopener">docs</a>), pinned as a submodule at v0.7.0.
+      Rollouts run on <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener">vLLM</a>
+      (<a href="https://docs.vllm.ai/en/latest/" target="_blank" rel="noopener">docs</a>). AgriManager adds the environments,
+      the agent loop and the reward function, and leaves VeRL unmodified. So in principle any model and RL algorithm
+      that VeRL and vLLM support can be plugged in:
+    </p>
+    <ul>
+      <li>Models: the <a href="https://github.com/volcengine/verl#key-features" target="_blank" rel="noopener">VeRL feature list</a>
+        (Hugging Face Transformers models such as Qwen, Llama, Gemma and DeepSeek),
+        <a href="https://verl.readthedocs.io/en/latest/advance/fsdp_extension.html" target="_blank" rel="noopener">adding a model to the FSDP backend</a>,
+        and <a href="https://docs.vllm.ai/en/latest/models/supported_models.html" target="_blank" rel="noopener">vLLM's supported models</a>.</li>
+      <li>Algorithms: the same <a href="https://github.com/volcengine/verl#key-features" target="_blank" rel="noopener">feature list</a>
+        (PPO, GRPO, RLOO, REINFORCE++, DAPO, DrGRPO and others),
+        <a href="https://verl.readthedocs.io/en/latest/algo/baseline.html" target="_blank" rel="noopener">VeRL's algorithm baselines</a>, and the
+        <a href="https://verl.readthedocs.io/en/latest/algo/grpo.html" target="_blank" rel="noopener">GRPO</a> and
+        <a href="https://verl.readthedocs.io/en/latest/algo/ppo.html" target="_blank" rel="noopener">PPO</a> pages.</li>
+    </ul>
+    <p>Those pages track VeRL's latest release. Check a feature against v0.7.0 before relying on it.</p>
+
+    <h2 id="tested">What we ran<a class="ah" href="#tested">#</a></h2>
+    <p><i>Paper results</i> means three training seeds scored on the <a href="test-suite.html">held-out test suite</a>.
+       <i>Exploratory</i> means one seed, reported as exploratory in the paper appendix.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Backbone</th><th>Algorithm</th><th>Status</th><th>Launcher (<code>experiments/…</code>)</th></tr>
+        <tr><td><code>Qwen/Qwen3-4B-Instruct-2507</code></td><td>GRPO</td><td>paper results, every setting</td><td>the per-setting <code>run_*_r{2,3,4}_train.sh</code> scripts (<a href="rl-training.html#paper-runs">RL training</a>)</td></tr>
+        <tr><td><code>meta-llama/Llama-3.2-3B-Instruct</code></td><td>GRPO</td><td>exploratory, unified policy</td><td><code>t3_2_…/run_t32_unified_llama32_{think,no_think}_train.sh</code></td></tr>
+        <tr><td><code>Qwen/Qwen2.5-3B-Instruct</code></td><td>GRPO</td><td>exploratory, unified policy</td><td rowspan="3"><code>t3_2_…/run_t32_backbone_sweep_train.sh</code></td></tr>
+        <tr><td><code>Qwen/Qwen3-8B</code></td><td>GRPO</td><td>exploratory, unified policy (think arm)</td></tr>
+        <tr><td><code>Qwen/Qwen3-4B-Instruct-2507</code></td><td>DrGRPO, PPO</td><td>exploratory, unified policy</td></tr>
+      </table>
+    </div>
+    <p>Here <code>t3_2_…</code> stands for <code>t3_2_unified_prompt_conditioned_policy</code>. The Qwen3-8B no-think arm
+       stopped at step 493 and was not published.</p>
+    <p>Neural-network baselines use <a href="https://stable-baselines3.readthedocs.io/en/master/" target="_blank" rel="noopener">Stable-Baselines3</a>
+       through <code>entrypoints/train/nn_train.sh</code>, selected with <code>agent.type</code>
+       (<code>agrimanager/nn_ppo/algorithms.py</code>):</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th><code>agent.type</code></th><th>Where in the paper</th></tr>
+        <tr><td><code>PPO</code></td><td>paper results, Tier 1 (one gradient pass per batch; eight passes in the appendix)</td></tr>
+        <tr><td><code>MaskablePPO</code></td><td>action-menu setting, appendix (<a href="https://sb3-contrib.readthedocs.io/en/master/modules/ppo_mask.html" target="_blank" rel="noopener">sb3-contrib</a>)</td></tr>
+        <tr><td><code>DQN</code>, <code>A2C</code></td><td>potato weather-regime, appendix</td></tr>
+      </table>
+    </div>
+
+    <h2 id="backbone">Switch the backbone<a class="ah" href="#backbone">#</a></h2>
+    <p>Set the Hugging Face model id or a local path:</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">bash</span> entrypoints/train/train.sh <span class="k">\</span>
+  actor_rollout_ref.model.path=Qwen/Qwen2.5-3B-Instruct <span class="k">\</span>
+  data.train_files=&lt;train.parquet&gt; data.val_files=&lt;val.parquet&gt;</pre>
+    </div>
+    <p>Prompts use the model's own chat template. To override it, set
+       <code>actor_rollout_ref.model.custom_chat_template</code>; Gemma models get a template with a system turn
+       automatically (<code>agrimanager/adapter/trainer/main_ppo.py</code>). Larger models need more GPUs
+       (<code>trainer.n_gpus_per_node</code>) or a lower <code>actor_rollout_ref.rollout.gpu_memory_utilization</code>.</p>
+
+    <h2 id="algorithm">Switch the algorithm<a class="ah" href="#algorithm">#</a></h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Algorithm</th><th>How</th></tr>
+        <tr><td>GRPO (default)</td><td><code>--config-name agri_grpo</code> (<code>algorithm.adv_estimator=grpo</code>)</td></tr>
+        <tr><td>PPO</td><td><code>--config-name agri_ppo</code>: a critic with GAE (<code>algorithm.adv_estimator=gae</code>); the sweep used 8 rollouts per prompt</td></tr>
+        <tr><td>DrGRPO</td><td>on <code>agri_grpo</code>: <code>algorithm.norm_adv_by_std_in_grpo=False</code> and <code>actor_rollout_ref.actor.loss_agg_mode=seq-mean-token-sum</code></td></tr>
+        <tr><td>Other VeRL estimators</td><td><code>algorithm.adv_estimator=&lt;name&gt;</code>, as documented by VeRL; not tested with AgriManager</td></tr>
+      </table>
+    </div>
+    <p>The sweep launcher wraps all three:</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">bash</span> experiments/t3_2_unified_prompt_conditioned_policy/run_t32_backbone_sweep_train.sh <span class="k">\</span>
+  <span class="k">--algo</span> grpo|drgrpo|ppo <span class="k">--think</span> think|tool_call|no_think <span class="k">--model</span> &lt;hf-model-id&gt;</pre>
+    </div>
+
+    <h2 id="format">Response format<a class="ah" href="#format">#</a></h2>
+    <p>Each arm trains and is scored in one format. Set it in the dataset config under <code>env:</code>, or apply it
+       at launch as the launchers do:</p>
+    <div class="code">
+      <div class="code-head"><span>hydra overrides</span><button class="copy">Copy</button></div>
+<pre>+data.env_config_overrides.require_think=True      <span class="c"># False for no-think</span>
++data.env_config_overrides.thinking_mode=think
++data.env_config_overrides.think_tag=tool_call     <span class="c"># or think</span></pre>
+    </div>
+    <ul>
+      <li>The paper's Qwen3-4B runs and the Llama-3.2 pair use the <code>&lt;tool_call&gt;</code> tag with 512 response tokens.</li>
+      <li>The Qwen2.5-3B and Qwen3-8B think arms use the <code>&lt;think&gt;</code> tag; the Qwen2.5-3B think arm also
+        used 1,024 response tokens (<code>data.max_response_length</code>). Those pairs differ in more than the format.</li>
+      <li>Score a checkpoint in the format it trained with; see <a href="evaluation.html#protocol">Evaluation</a>.</li>
+    </ul>
+
+    <h2 id="api">API models (zero-shot)<a class="ah" href="#api">#</a></h2>
+    <p>Hosted models can be scored without training through OpenRouter. Configs live in
+       <code>agrimanager/model_interface/configs/openrouter/</code>; set <code>OPENROUTER_API_KEY</code> and pick a
+       model slug from <a href="https://openrouter.ai/models" target="_blank" rel="noopener">openrouter.ai/models</a>:</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">bash</span> entrypoints/eval/eval.sh <span class="k">--config-name</span> openrouter <span class="k">\</span>
+  data.inference_file=&lt;split.parquet&gt; model.path=&lt;model-slug&gt; output.dir=&lt;out_dir&gt;</pre>
+    </div>
+    <p>These evaluations are not part of the paper results. Use a fixed model slug for comparable numbers.</p>
+
+    <div class="pagenav" id="pagenav"></div>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+<script src="assets/app.js?v=20261025f"></script>
+</body>
+</html>

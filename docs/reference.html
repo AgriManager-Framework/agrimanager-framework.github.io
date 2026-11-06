@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Citation · AgriManager</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+<script>(function () { try { var t = localStorage.getItem('agri-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="assets/style.css?v=20261025g" />
+</head>
+<body>
+<header class="top">
+  <button class="hbtn menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="index.html"><img class="logo" src="assets/logo-icon.svg" alt="" /> <span class="wm"><span class="wm-agri">Agri</span><span class="wm-mgr">Manager</span></span> <span class="sep">/</span> <span class="doctag">Docs</span></a>
+  <div class="spacer"></div>
+  <a class="hlink" id="siteLink" href="../">Website</a>
+  <a class="hlink" id="repoLink" href="https://github.com/AgriManager-Framework/AgriManager" target="_blank" rel="noopener">GitHub</a>
+  <button class="hbtn" id="themeBtn" aria-label="Toggle light or dark theme"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+</header>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="wrap">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <h1>Citation</h1>
+    <p class="subtitle">How to cite AgriManager, and what it builds on.</p>
+
+    <p>If you use AgriManager, please cite the paper (links to the proceedings and arXiv versions will be added here). A machine-readable entry is in <code>CITATION.cff</code>.</p>
+    <div class="code plain">
+      <div class="code-head"><span>bibtex</span><button class="copy">Copy</button></div>
+<pre>@inproceedings{agrimanager2026,
+  title     = {AgriManager: A Framework and Benchmark for LLM-RL
+               Generalization in Agricultural Management},
+  author    = {Gui, Chi and Zheng, Junwen and Nigam, Ritwik and Yang, Qianlan and
+               Lang, Meagan and Dongre, Vardhan and Barr, Jeremiah and
+               Wang, Yu-Xiong and Adve, Vikram S.},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS),
+               Evaluations and Datasets Track},
+  year      = {2026}
+}</pre>
+    </div>
+
+    <h2 id="acknowledgements">Acknowledgements<a class="ah" href="#acknowledgements">#</a></h2>
+    <p>AgriManager builds on
+       <a href="https://github.com/verl-project/verl" target="_blank" rel="noopener">VeRL</a>,
+       <a href="https://github.com/Intelligent-Reliable-Autonomous-Systems/WOFOSTGym" target="_blank" rel="noopener">WOFOST-Gym</a>,
+       <a href="https://github.com/kora-labs/cyclesgym" target="_blank" rel="noopener">CycleGym</a>, and
+       <a href="https://gitlab.inria.fr/rgautron/gym_dssat_pdi" target="_blank" rel="noopener">gym-DSSAT</a>,
+       and on the WOFOST, Cycles and DSSAT crop models. Thanks to these projects and their maintainers. When you use a
+       simulator through AgriManager, please also cite the simulator and its wrapper.</p>
+
+    <h2 id="license">License<a class="ah" href="#license">#</a></h2>
+    <p>The code is licensed under Apache-2.0 (<code>LICENSE</code>, <code>NOTICE</code>). The datasets we publish are
+       licensed under CC BY 4.0, and the released model weights under Apache-2.0, except checkpoints fine-tuned from a
+       base model whose license says otherwise (Llama 3.2, Qwen2.5-3B). See <a href="models-data.html#licenses">Models
+       and data</a>.</p>
+
+    <div class="pagenav" id="pagenav"></div>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+<script src="assets/app.js?v=20261025f"></script>
+</body>
+</html>

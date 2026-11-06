@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quick start · AgriManager</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+<script>(function () { try { var t = localStorage.getItem('agri-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="assets/style.css?v=20261025g" />
+</head>
+<body>
+<header class="top">
+  <button class="hbtn menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="index.html"><img class="logo" src="assets/logo-icon.svg" alt="" /> <span class="wm"><span class="wm-agri">Agri</span><span class="wm-mgr">Manager</span></span> <span class="sep">/</span> <span class="doctag">Docs</span></a>
+  <div class="spacer"></div>
+  <a class="hlink" id="siteLink" href="../">Website</a>
+  <a class="hlink" id="repoLink" href="https://github.com/AgriManager-Framework/AgriManager" target="_blank" rel="noopener">GitHub</a>
+  <button class="hbtn" id="themeBtn" aria-label="Toggle light or dark theme"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+</header>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="wrap">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <h1>Quick start</h1>
+    <p class="subtitle">Score scripted policies on a CPU, then build a dataset, train, and evaluate.</p>
+
+    <p>
+      Execution is organized into three layers, and overrides only flow <em>downward</em>: cluster files
+      (<code>sbatch_*.slurm</code>) call fixed experiment wrappers (<code>run_*.sh</code>), which call the stable
+      atomic operations under <code>entrypoints/</code>. The entrypoints are the API the rest of the repo depends
+      on; all overrides are Hydra <code>key=value</code>.
+    </p>
+
+    <figure>
+      <div class="frame light-art">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 350" font-family="system-ui, sans-serif" role="img" aria-label="Three-layer execution model">
+          <defs><marker id="arrA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#888"/></marker></defs>
+          <text x="20" y="26" font-size="15" font-weight="600" fill="#222">Three layers, plus a pluggable env adapter</text>
+          <text x="20" y="46" font-size="12.5" fill="#666">Overrides flow down only. The env adapter is swappable by dataset config.</text>
+          <rect x="60" y="72" width="360" height="52" rx="6" fill="#f5f5f5" stroke="#888" stroke-width="1.4"/>
+          <text x="240" y="96" font-size="13.5" font-weight="600" text-anchor="middle" fill="#222">sbatch_*.slurm</text>
+          <text x="240" y="114" font-size="11.5" text-anchor="middle" fill="#555">resources only · activate env · srun one run_*.sh</text>
+          <line x1="240" y1="124" x2="240" y2="154" stroke="#888" stroke-width="1.4" marker-end="url(#arrA)"/>
+          <text x="250" y="143" font-size="11.5" fill="#666">srun</text>
+          <rect x="60" y="156" width="360" height="68" rx="6" fill="#e8f0fb" stroke="#4a78c9" stroke-width="1.4"/>
+          <text x="240" y="180" font-size="13.5" font-weight="600" text-anchor="middle" fill="#222">experiments/&lt;exp&gt;/run_*.sh</text>
+          <text x="240" y="199" font-size="11.5" text-anchor="middle" fill="#555">fixed wrapper · hardcodes every path and override</text>
+          <text x="240" y="215" font-size="11.5" text-anchor="middle" fill="#555">no free-form CLI flags</text>
+          <line x1="240" y1="224" x2="240" y2="254" stroke="#888" stroke-width="1.4" marker-end="url(#arrA)"/>
+          <text x="250" y="243" font-size="11.5" fill="#666">Hydra key=value</text>
+          <rect x="60" y="256" width="360" height="76" rx="6" fill="#fff3e0" stroke="#d68f2e" stroke-width="1.4"/>
+          <text x="240" y="280" font-size="13.5" font-weight="600" text-anchor="middle" fill="#222">entrypoints/*.sh</text>
+          <text x="240" y="299" font-size="11.5" text-anchor="middle" fill="#555">stable atomic operations</text>
+          <text x="240" y="317" font-size="11.5" text-anchor="middle" fill="#555">dataset build · LLM train · LLM eval · NN train · NN eval</text>
+          <line x1="420" y1="294" x2="498" y2="294" stroke="#888" stroke-width="1.4" marker-end="url(#arrA)"/>
+          <text x="462" y="285" font-size="11.5" text-anchor="middle" fill="#666">env_name</text>
+          <rect x="502" y="256" width="198" height="76" rx="6" fill="#e8f6e8" stroke="#3b8c3b" stroke-width="1.4"/>
+          <text x="601" y="280" font-size="13.5" font-weight="600" text-anchor="middle" fill="#222">agrimanager/env/&lt;name&gt;/</text>
+          <text x="601" y="299" font-size="11.5" text-anchor="middle" fill="#555">pluggable adapter</text>
+          <text x="601" y="317" font-size="11.5" text-anchor="middle" fill="#555">4 files, no registration</text>
+        </svg>
+      </div>
+      <figcaption><b>The three-layer execution model.</b> Dataset build, training, and evaluation are the stable atomic operations under <code>entrypoints/</code>.</figcaption>
+    </figure>
+
+    <h2 id="cpu">1. Check the setup on a CPU<a class="ah" href="#cpu">#</a></h2>
+    <p>This needs no GPU and no model download: it builds eight maize scenarios and scores the no-action policy and
+       the scripted agronomic reference on them. <code>install.sh --cpu</code> is enough.</p>
+    <div class="code">
+      <div class="code-head"><span>bash · CPU</span><button class="copy">Copy</button></div>
+<pre><span class="o">bash</span> smoke_tests/wofost_gym/run_cpu_quickstart.sh</pre>
+    </div>
+    <p>The script builds the dataset from <code>smoke_tests/wofost_gym/config/quickstart_maize_cpu.yaml</code>
+       (the first run downloads the 0.25 GB maize weather pool), rolls out both policies with the WOFOST
+       <code>lnpkw-v0</code> action menu and the <code>profit_max</code> objective, and prints each mean objective.
+       Expected tail (about 45 seconds, including the download):</p>
+    <div class="code plain">
+      <div class="code-head"><span>output</span></div>
+<pre>no_action: smoke_tests/wofost_gym/results/quickstart/no_action/metrics.json
+  objective_reward_mean = 0.3341123096222971
+ag_heuristic: smoke_tests/wofost_gym/results/quickstart/ag_heuristic/metrics.json
+  objective_reward_mean = 1.5955195245941627</pre>
+    </div>
+    <p>Eight scenarios make a smoke check; benchmark numbers come from the <a href="test-suite.html">held-out test suite</a>. <code>ag_heuristic</code> is the current code
+       version of the scripted agronomic reference; the paper's references are listed in
+       <a href="benchmark.html#references">Benchmark</a>. To print what a language model would read for one
+       scenario:</p>
+    <div class="code">
+      <div class="code-head"><span>python</span><button class="copy">Copy</button></div>
+<pre><span class="k">import</span> pandas <span class="k">as</span> pd
+<span class="k">from</span> agrimanager.env.base <span class="k">import</span> create_environment
+
+df = pd.read_parquet(<span class="k">"smoke_tests/wofost_gym/data/quickstart_maize_cpu/val.parquet"</span>)
+env_config = df.iloc[0][<span class="k">"extra_info"</span>][<span class="k">"interaction_kwargs"</span>][<span class="k">"env_config"</span>]
+env, _ = create_environment(<span class="k">"wofost_gym"</span>, dict(env_config))
+observation, info = env.reset()
+print(env.system_prompt())
+print(observation)</pre>
+    </div>
+
+    <h2 id="build">2. Build a dataset<a class="ah" href="#build">#</a></h2>
+    <p>A dataset config declares <code>env_name</code> plus the scenario parameters; environment behavior is
+       <b>dataset-owned</b> — baked into the parquet, so a split always rebuilds the same environment
+       (see <a href="configuration.html#env-keys">Configuration</a>).</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">bash</span> entrypoints/dataset/build.sh <span class="k">\</span>
+  <span class="k">--config</span> entrypoints/dataset/examples/wofost/example_sample.yaml <span class="k">\</span>
+  <span class="k">--num-workers</span> 8</pre>
+    </div>
+
+    <h2 id="train">3. Train<a class="ah" href="#train">#</a></h2>
+    <p>Training runs GRPO through VeRL and needs a CUDA GPU. The default config is <code>agri_grpo</code>; override
+       any parameter via Hydra <code>key=value</code>. With no overrides it trains on the WOFOST smoke datasets, so
+       build those first with <code>bash smoke_tests/wofost_gym/run_build_datasets.sh</code> (it uses the 20-crop
+       weather pool, a 17.6 GB download).</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="c"># run with the default config</span>
+<span class="o">bash</span> entrypoints/train/train.sh
+
+<span class="c"># your own dataset, model and run name</span>
+<span class="o">bash</span> entrypoints/train/train.sh <span class="k">\</span>
+  data.train_files=experiments/my_exp/data/my_dataset/train.parquet <span class="k">\</span>
+  data.val_files=experiments/my_exp/data/my_dataset/val.parquet <span class="k">\</span>
+  actor_rollout_ref.model.path=Qwen/Qwen3-4B-Instruct-2507 <span class="k">\</span>
+  trainer.experiment_name=my_experiment</pre>
+    </div>
+
+    <h2 id="evaluate">4. Evaluate<a class="ah" href="#evaluate">#</a></h2>
+    <p>Evaluation is a batched rollout across the scenarios of a parquet split, with greedy decoding. Convert a
+       sharded training checkpoint to Transformers layout first. Scripted policies (<code>no_action</code>,
+       <code>random</code>, and <code>ag_heuristic</code>, the scripted agronomic reference) run through a separate
+       entrypoint on a CPU. To score on the paper's held-out test suite, follow <a href="evaluation.html">Evaluation</a>.</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="c"># sharded checkpoint -> Transformers layout</span>
+<span class="o">bash</span> entrypoints/tools/merge.sh &lt;run_dir&gt;/global_step_100/actor &lt;run_dir&gt;/global_step_100/hf
+
+<span class="c"># batched rollout evaluation</span>
+<span class="o">bash</span> entrypoints/eval/eval.sh <span class="k">\</span>
+  data.inference_file=experiments/my_exp/data/my_dataset/test.parquet <span class="k">\</span>
+  model.config=agrimanager/model_interface/configs/vllm_offline/default.yaml <span class="k">\</span>
+  model.path=&lt;run_dir&gt;/global_step_100/hf <span class="k">\</span>
+  output.dir=experiments/my_exp/results/my_eval
+
+<span class="c"># a scripted policy (no_action / random / ag_heuristic)</span>
+<span class="o">bash</span> entrypoints/eval/baseline_eval.sh <span class="k">--config-name</span> no_action <span class="k">\</span>
+  data.inference_file=&lt;split.parquet&gt; output.dir=&lt;out_dir&gt; wandb.enabled=false</pre>
+    </div>
+
+    <h2 id="nn">5. Train a neural-network baseline<a class="ah" href="#nn">#</a></h2>
+    <p>A framework-native neural-network policy (Stable-Baselines3 PPO) trains as a fixed-interface baseline on a
+       CPU. It reads the numeric variant of a dataset, built from the same dataset config with
+       <code>llm_mode: false</code>; the WOFOST smoke build creates both variants. See
+       <a href="rl-training.html#nn">RL training</a>.</p>
+    <div class="code">
+      <div class="code-head"><span>bash</span><button class="copy">Copy</button></div>
+<pre><span class="o">bash</span> entrypoints/train/nn_train.sh <span class="k">--config-name</span> nn
+<span class="o">bash</span> entrypoints/eval/nn_eval.sh  <span class="k">--config-name</span> nn</pre>
+    </div>
+
+    <div class="pagenav" id="pagenav"></div>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+<script src="assets/app.js?v=20261025f"></script>
+</body>
+</html>

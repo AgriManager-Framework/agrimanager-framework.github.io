@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Models and data · AgriManager</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+<script>(function () { try { var t = localStorage.getItem('agri-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="assets/style.css?v=20261025g" />
+</head>
+<body>
+<header class="top">
+  <button class="hbtn menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="index.html"><img class="logo" src="assets/logo-icon.svg" alt="" /> <span class="wm"><span class="wm-agri">Agri</span><span class="wm-mgr">Manager</span></span> <span class="sep">/</span> <span class="doctag">Docs</span></a>
+  <div class="spacer"></div>
+  <a class="hlink" id="siteLink" href="../">Website</a>
+  <a class="hlink" id="repoLink" href="https://github.com/AgriManager-Framework/AgriManager" target="_blank" rel="noopener">GitHub</a>
+  <button class="hbtn" id="themeBtn" aria-label="Toggle light or dark theme"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+</header>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="wrap">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <h1>Models and data</h1>
+    <p class="subtitle">The released datasets, test suite and checkpoints, and where each one lives.</p>
+
+    <p>All released artifacts live on Hugging Face under the
+       <a href="https://huggingface.co/AgriManager-Framework" target="_blank" rel="noopener"><code>AgriManager-Framework</code></a>
+       organization. The code is at
+       <a href="https://github.com/AgriManager-Framework/AgriManager" target="_blank" rel="noopener">AgriManager-Framework/AgriManager</a>.</p>
+
+    <h2 id="by-setting">By setting<a class="ah" href="#by-setting">#</a></h2>
+    <p>Each benchmark setting with its Hugging Face collection, W&amp;B training runs and test-suite folder.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Tier</th><th>Setting</th><th>Models</th><th>Training curves</th><th>Test set</th></tr></thead>
+      <tbody>
+<tr><td>Tier 1 · Within Schema</td><td>T1.1 Weather regime</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t11-weather-regime-6ade3b9d93dd1f22d1a1a49b">Models</a></td><td><a href="https://wandb.ai/agrimanager/t1-1-weather-regime">Training curves</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main">Test set</a></td></tr>
+<tr><td></td><td>T1.2 Crop variety</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t12-crop-variety-6ade3b9fffe165f18441da59">Models</a></td><td><a href="https://wandb.ai/agrimanager/t1-2-crop-variety">Training curves</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main/e4_t12_cross_crop">Test set</a></td></tr>
+<tr><td></td><td>T1.3 Price regime</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t13-price-regime-6ade3ba1f90654ac2bd63ca7">Models</a></td><td><a href="https://wandb.ai/agrimanager/t1-3-price-regime">Training curves</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main/e4_t13_price_regime">Test set</a></td></tr>
+<tr><td>Tier 2 · Single-Axis Schema</td><td>T2.1 Observation schema</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t21-observation-schema-6ade3ba28e3e2ca978d0ba6d">Models</a></td><td><a href="https://wandb.ai/agrimanager/t2-1-observation-schema">Training curves</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main/e4_t21_observation_schema">Test set</a></td></tr>
+<tr><td></td><td>T2.2 Action menu</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t22-action-menu-6ade3ba2d49bbdd8dd7ef3ba">Models</a></td><td><a href="https://wandb.ai/agrimanager/t2-2-action-menu">Training curves</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main/e4_t22_action_menu">Test set</a></td></tr>
+<tr><td></td><td>T2.3 Objective</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t23-objective-6ade3ba4f90654ac2bd63df8">Models</a></td><td><a href="https://wandb.ai/agrimanager/t2-3-objective">Training curves</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main/e4_t23_reward_formulation">Test set</a></td></tr>
+<tr><td>Tier 3 · Compositional Schema</td><td>T3.1 Cross-simulator transfer</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t31-cross-simulator-transfer-6ade3ba5b04b81f86ad2e4c7">Models</a></td><td><a href="https://wandb.ai/agrimanager/t3-1-cross-simulator">Training curves</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main">Test set</a></td></tr>
+<tr><td></td><td>T3.2 Unified policy</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t32-unified-policy-6ade3ba7acc7c9c710e0bb0b">Models</a></td><td><a href="https://wandb.ai/agrimanager/t3-2-unified-policy">Training curves</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main">Test set</a></td></tr>
+<tr><td>Exploratory</td><td>Other backbones and RL algorithms</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/exploratory-backbones-and-rl-algorithms-6ade3ba8d49bbdd8dd7ef45f">Models</a></td><td><a href="https://wandb.ai/agrimanager/exploratory-backbones-algorithms">Training curves</a></td><td>—</td></tr>
+      </tbody></table></div>
+
+    <h2 id="data">Data<a class="ah" href="#data">#</a></h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Artifact</th><th>Repository</th><th>Content</th></tr>
+        <tr><td>20-crop WOFOST weather pool</td><td><code>AgriManager-Framework/wofost-weather-pool</code></td><td>(crop, year, latitude, longitude) scenarios for 20 crops with <code>train</code> / <code>val</code> / <code>test</code> splits, plus the weather cache; CC BY 4.0</td></tr>
+        <tr><td>WOFOST weather-regime pool</td><td><code>AgriManager-Framework/wofost-weather-regime-pool</code></td><td>chickpea and potato scenarios with weather-regime groups; CC BY 4.0</td></tr>
+        <tr><td>WOFOST maize pool</td><td><code>AgriManager-Framework/weather_pool_maize</code></td><td>maize scenarios with <code>train</code> / <code>val</code> splits; CC BY 4.0</td></tr>
+        <tr><td>Held-out test suite</td><td><code>AgriManager-Framework/agrimanager-test-suite</code></td><td>every frozen test split with manifests, checksums and audits (<a href="test-suite.html">Held-out test suite</a>); CC BY 4.0</td></tr>
+        <tr><td>Per-run result bundles</td><td><code>AgriManager-Framework/schema-results-*</code></td><td>per-scenario outputs and <code>eval_manifest.json</code> for every scored checkpoint; CC BY 4.0</td></tr>
+        <tr><td>Aggregate tables</td><td>the code repository, <code>results/tables/</code></td><td>the CSV tables behind every paper number (<a href="reproduce.html">Reproducing the paper</a>); CC BY 4.0</td></tr>
+      </table>
+    </div>
+    <p>Cycles and DSSAT scenarios are generated from configs and seeds; their only static datasets are the
+       test-suite splits.</p>
+
+    <h2 id="checkpoints">Language-model checkpoints<a class="ah" href="#checkpoints">#</a></h2>
+    <p>Each checkpoint is a full Transformers model fine-tuned from <code>Qwen/Qwen3-4B-Instruct-2507</code> with
+       GRPO: one repository per training run, one branch per saved step (<code>step-N</code>). The terminal checkpoint,
+       the one the paper scores, is the highest <code>step-N</code>. Each repository carries a
+       <code>run_manifest.json</code> with the base model, seed, response format, setting, step and file checksums,
+       which the evaluator reads. <code>results/scoring_manifest.tsv</code> lists every revision scored for the paper.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Setting</th><th>Repositories (<code>AgriManager-Framework/…</code>)</th></tr>
+        <tr><td>weather-regime</td><td><code>schema-t11-{chickpea,potato}-{think,no-think}-r{2,3,4}</code></td></tr>
+        <tr><td>crop-variety</td><td><code>schema-t12-crosscrop-{4id,8id,16id}-…</code></td></tr>
+        <tr><td>price-regime</td><td><code>schema-t13-price-…</code> (r1–r3)</td></tr>
+        <tr><td>observation-schema</td><td><code>schema-t21-observation-…</code></td></tr>
+        <tr><td>action-menu</td><td><code>schema-t22-family-{a,b}-…</code></td></tr>
+        <tr><td>reward-formulation</td><td><code>schema-t23-{objectives,yield-only}-…</code></td></tr>
+        <tr><td>cross-simulator</td><td><code>schema-t31-{wofost,dssat,cycles}-…</code></td></tr>
+        <tr><td>unified policy</td><td><code>schema-t32-qwen-{think,no-think}-r{2,3,4}</code></td></tr>
+      </table>
+    </div>
+    <p>Exploratory checkpoints, one seed each: <code>Llama-3.2-3B-AgriManager-t32-unified-{think,no-think}</code> (the unified policy on
+       Llama-3.2-3B-Instruct) and <code>t32-diffmodels-*</code> (the unified policy with other backbones and
+       algorithms).</p>
+    <p>The terminal <code>agent.zip</code> of every NN baseline run is kept with its config and will be uploaded under
+       <code>AgriManager-Framework/</code>.</p>
+
+    <h2 id="licenses">Licenses<a class="ah" href="#licenses">#</a></h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Component</th><th>License</th></tr>
+        <tr><td>AgriManager code</td><td>Apache-2.0</td></tr>
+        <tr><td>Datasets we publish (weather pools, test suite, result bundles, tables)</td><td>CC BY 4.0</td></tr>
+        <tr><td>Checkpoints fine-tuned from Qwen3 models</td><td>Apache-2.0</td></tr>
+        <tr><td><code>Llama-3.2-3B-AgriManager-t32-unified-*</code> (base Llama-3.2-3B-Instruct)</td><td>Llama 3.2 Community License</td></tr>
+        <tr><td><code>t32-diffmodels-qwen25-3b-*</code> (base Qwen2.5-3B-Instruct)</td><td>Qwen Research License</td></tr>
+      </table>
+    </div>
+    <p>Simulators and wrappers are not vendored and keep their own licenses (<code>THIRD_PARTY_NOTICES.md</code>). The
+       native Cycles binary that CycleGym downloads at install time is distributed under CC BY-NC-ND 4.0.</p>
+
+    <div class="pagenav" id="pagenav"></div>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+<script src="assets/app.js?v=20261025f"></script>
+</body>
+</html>

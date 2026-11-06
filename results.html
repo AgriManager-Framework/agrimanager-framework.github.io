@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgriManager Results</title>
+<meta name="description" content="AgriManager results by tier, from the frozen test suite and three training seeds.">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  (function () { try { var t = localStorage.getItem("agm3-theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {} })();
+  // Fluid scale for large screens: 1.0 up to 1440 px wide, rising linearly to 1.18 at 2560 px (mobile and laptops unchanged).
+  (function () {
+    function z() { var w = window.innerWidth / (parseFloat(document.documentElement.style.zoom) || 1);
+      var k = Math.max(1, Math.min(1.18, 1 + 0.18 * (window.innerWidth - 1440) / 1120));
+      document.documentElement.style.zoom = k === 1 ? "" : k.toFixed(3);
+      document.documentElement.style.setProperty("--vh", (window.innerHeight / k).toFixed(1) + "px"); }
+    z(); window.addEventListener("resize", z);
+  })();
+</script>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/site3.css?v=10270734">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14M5 19l7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5c3.5 4.4 6 7.7 6 10.6A6 6 0 0 1 6 14.1c0-2.9 2.5-6.2 6-10.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="currentColor"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z" fill="currentColor"/></symbol>
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+  <symbol id="i-data" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="2.6"/><path d="M5 6v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6M5 12v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6v-6"/></g></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M9 7l-5 5 5 5M15 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v6M12 7.5v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+</svg>
+<header class="nav sub" id="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="AgriManager home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="292 177 1470 304" class="wordmark" role="img" aria-label="AgriManager" fill="none">
+  <path fill="var(--logo-green)" fill-rule="evenodd" d="M540,341 L539,340 L531,342 L521,342 L520,343 L497,344 L496,345 L470,347 L448,353 L432,361 L418,372 L407,384 L395,402 L382,428 L382,431 L394,419 L408,408 L437,392 L463,383 L479,380 L481,382 L458,391 L444,398 L427,409 L412,421 L395,438 L386,449 L387,450 L402,447 L432,446 L433,445 L452,443 L469,438 L487,428 L506,410 L515,397 L528,371 Z M968,297 L967,298 L967,387 L968,388 L990,388 L991,387 L991,298 L990,297 Z M955,296 L944,295 L937,297 L930,301 L923,309 L921,308 L921,298 L920,297 L898,297 L897,298 L897,387 L898,388 L921,388 L922,387 L922,339 L924,331 L933,321 L939,318 L944,317 L955,318 L956,317 L956,297 Z M880,297 L858,297 L857,298 L857,306 L855,307 L850,302 L841,297 L833,295 L821,295 L808,299 L802,303 L794,311 L787,326 L786,338 L785,339 L787,357 L793,370 L803,380 L813,385 L821,387 L838,386 L849,381 L856,376 L857,377 L857,387 L855,395 L847,404 L840,407 L828,408 L818,406 L807,401 L802,397 L791,414 L793,417 L804,423 L813,426 L818,426 L819,427 L844,427 L856,424 L864,420 L872,413 L879,400 L880,390 L881,389 L881,298 Z M827,316 L840,316 L845,318 L852,324 L857,335 L857,347 L853,357 L847,363 L840,366 L832,367 L831,366 L826,366 L820,363 L813,355 L811,349 L812,330 L814,326 L821,319 Z M707,261 L688,309 L684,322 L678,335 L674,348 L670,356 L666,369 L662,377 L661,382 L658,387 L659,388 L685,388 L687,386 L693,367 L697,362 L747,362 L750,366 L756,385 L758,388 L784,388 L785,386 L758,318 L756,310 L749,294 L738,263 L736,261 Z M721,292 L723,293 L737,331 L739,334 L740,338 L738,340 L705,340 L703,338 L713,313 L718,297 Z M975,253 L967,259 L965,263 L965,272 L968,277 L974,281 L984,281 L988,279 L993,273 L994,269 L993,262 L990,257 L986,254 Z M327,449 L327,451 L357,451 L369,421 L384,392 L399,371 L415,355 L443,338 L470,284 L470,282 L474,276 L474,274 L478,267 L481,265 L484,268 L511,324 L511,326 L513,328 L516,327 L531,327 L532,326 L547,326 L548,325 L559,325 L561,327 L550,356 L538,383 L538,387 L552,414 L552,416 L568,449 L571,451 L634,451 L635,450 L556,289 L556,287 L543,262 L543,260 L521,216 L521,214 L515,208 L512,207 L453,207 L446,212 Z"/>
+  <path fill="var(--logo-navy)" fill-rule="evenodd" d="M1726,296 L1714,295 L1706,297 L1699,301 L1692,309 L1690,308 L1690,298 L1689,297 L1667,297 L1666,298 L1666,387 L1667,388 L1689,388 L1690,387 L1690,337 L1692,331 L1701,321 L1711,317 L1724,317 L1726,318 L1727,317 L1727,297 Z M1588,299 L1581,303 L1572,311 L1564,326 L1563,336 L1562,337 L1562,348 L1563,349 L1564,359 L1569,370 L1581,382 L1586,385 L1600,389 L1622,389 L1633,386 L1639,383 L1649,375 L1649,373 L1637,362 L1635,362 L1629,367 L1623,370 L1604,371 L1596,367 L1588,358 L1586,350 L1588,348 L1654,348 L1655,347 L1655,334 L1652,322 L1648,314 L1636,302 L1625,297 L1615,295 L1604,295 Z M1586,332 L1589,324 L1596,317 L1606,313 L1617,314 L1623,317 L1629,323 L1632,330 L1632,332 L1629,335 L1591,335 Z M1551,297 L1529,297 L1528,298 L1528,306 L1526,307 L1514,298 L1502,295 L1494,295 L1493,296 L1488,296 L1476,301 L1465,311 L1460,320 L1457,331 L1457,352 L1459,360 L1467,374 L1474,380 L1488,386 L1508,386 L1512,385 L1520,381 L1526,376 L1528,377 L1529,384 L1528,385 L1528,391 L1525,398 L1519,404 L1512,407 L1507,408 L1491,407 L1479,402 L1474,398 L1472,398 L1462,414 L1464,417 L1473,422 L1491,427 L1514,427 L1523,425 L1533,421 L1544,411 L1549,402 L1552,388 L1552,298 Z M1501,315 L1508,315 L1517,318 L1525,326 L1529,338 L1528,350 L1526,355 L1518,363 L1508,367 L1500,367 L1491,363 L1485,357 L1481,348 L1481,335 L1485,325 L1491,319 Z M1367,305 L1366,308 L1372,321 L1375,321 L1380,318 L1393,314 L1410,314 L1417,317 L1420,320 L1422,324 L1422,331 L1419,334 L1387,336 L1376,339 L1367,344 L1361,352 L1359,361 L1360,371 L1364,379 L1369,384 L1381,389 L1400,389 L1410,386 L1421,378 L1423,380 L1423,387 L1424,388 L1444,388 L1445,387 L1445,376 L1446,375 L1445,373 L1446,371 L1445,369 L1446,364 L1445,360 L1445,319 L1440,308 L1436,304 L1425,298 L1409,295 L1398,295 L1397,296 L1386,297 L1374,301 Z M1422,349 L1422,360 L1420,364 L1412,371 L1400,374 L1390,373 L1382,365 L1382,359 L1389,351 L1401,348 L1415,348 L1416,347 L1420,347 Z M1338,303 L1332,299 L1324,296 L1310,295 L1298,298 L1284,308 L1283,307 L1283,298 L1282,297 L1260,297 L1259,298 L1259,387 L1260,388 L1282,388 L1283,387 L1283,331 L1286,325 L1292,319 L1299,316 L1311,316 L1317,319 L1322,325 L1324,332 L1324,387 L1325,388 L1347,388 L1348,387 L1348,326 L1345,313 Z M1168,304 L1166,306 L1166,308 L1170,318 L1173,322 L1177,319 L1192,314 L1210,314 L1217,317 L1221,321 L1222,331 L1219,334 L1194,335 L1193,336 L1182,337 L1168,343 L1161,351 L1159,357 L1159,369 L1163,379 L1170,385 L1181,389 L1200,389 L1213,384 L1220,378 L1222,379 L1222,387 L1223,388 L1244,388 L1245,387 L1245,319 L1240,308 L1230,300 L1222,297 L1211,296 L1210,295 L1197,295 L1196,296 L1185,297 L1181,299 L1178,299 Z M1222,349 L1221,363 L1215,369 L1209,372 L1199,374 L1190,373 L1186,371 L1182,366 L1183,356 L1191,350 L1200,348 L1216,348 L1217,347 L1220,347 Z M1011,262 L1011,387 L1012,388 L1033,388 L1034,387 L1034,310 L1035,309 L1038,311 L1069,376 L1087,376 L1089,374 L1099,351 L1121,308 L1123,309 L1123,387 L1125,388 L1143,388 L1147,387 L1147,269 L1146,268 L1147,262 L1146,261 L1118,261 L1116,263 L1079,342 L1076,340 L1069,323 L1041,263 L1039,261 L1012,261 Z"/>
+</svg>
+</a>
+    <nav class="nav-links" aria-label="Pages">
+      <a href="index.html">Overview</a>
+      <a href="benchmark.html">Benchmark</a>
+      <a href="results.html" class="active" aria-current="page">Results</a>
+      <a href="docs/index.html">Docs</a>
+    </nav>
+    <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle light or dark theme">
+      <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <svg class="moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="results-page">
+<section class="page-head"><div class="wrap">
+  <h1>Results</h1>
+  <p class="lead">Every number comes from the frozen test suite; hover any chart for exact values.</p>
+  <div class="toc"><a href="#tier-1">Tier 1</a><a href="#tier-2">Tier 2</a><a href="#tier-3">Tier 3</a><a href="#backbones">Other backbones</a></div>
+  <div class="artifacts" id="artifacts"><div class="art-top"><b>Models, training curves and test sets</b><span class="res-row"><a href="https://github.com/AgriManager-Framework/AgriManager">Code ↗</a><a href="https://huggingface.co/AgriManager-Framework">Models &amp; Data ↗</a><a href="https://wandb.ai/agrimanager">Training logs ↗</a><a href="docs/index.html">Docs ↗</a></span></div><div class="table-wrap"><table class="art-table"><thead><tr><th>Tier</th><th>Setting</th><th>Models</th><th>Training curves</th><th>Test set</th></tr></thead><tbody><tr><th rowspan="3" class="art-tier">Tier 1<small>Within Schema</small></th><td class="art-set"><b>T1.1</b> Weather regime</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t11-weather-regime-6ade3b9d93dd1f22d1a1a49b">Models ↗</a></td><td><a href="https://wandb.ai/agrimanager/t1-1-weather-regime">Training curves ↗</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main" title="potato: e4_t11_potato_weather_regime, chickpea: e4_t11_chickpea_weather_regime">Test set ↗</a></td></tr><tr><td class="art-set"><b>T1.2</b> Crop variety</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t12-crop-variety-6ade3b9fffe165f18441da59">Models ↗</a></td><td><a href="https://wandb.ai/agrimanager/t1-2-crop-variety">Training curves ↗</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main/e4_t12_cross_crop">Test set ↗</a></td></tr><tr><td class="art-set"><b>T1.3</b> Price regime</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t13-price-regime-6ade3ba1f90654ac2bd63ca7">Models ↗</a></td><td><a href="https://wandb.ai/agrimanager/t1-3-price-regime">Training curves ↗</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main/e4_t13_price_regime">Test set ↗</a></td></tr><tr><th rowspan="3" class="art-tier">Tier 2<small>Single-Axis Schema</small></th><td class="art-set"><b>T2.1</b> Observation schema</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t21-observation-schema-6ade3ba28e3e2ca978d0ba6d">Models ↗</a></td><td><a href="https://wandb.ai/agrimanager/t2-1-observation-schema">Training curves ↗</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main/e4_t21_observation_schema">Test set ↗</a></td></tr><tr><td class="art-set"><b>T2.2</b> Action menu</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t22-action-menu-6ade3ba2d49bbdd8dd7ef3ba">Models ↗</a></td><td><a href="https://wandb.ai/agrimanager/t2-2-action-menu">Training curves ↗</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main/e4_t22_action_menu">Test set ↗</a></td></tr><tr><td class="art-set"><b>T2.3</b> Objective</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t23-objective-6ade3ba4f90654ac2bd63df8">Models ↗</a></td><td><a href="https://wandb.ai/agrimanager/t2-3-objective">Training curves ↗</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main/e4_t23_reward_formulation">Test set ↗</a></td></tr><tr><th rowspan="2" class="art-tier">Tier 3<small>Compositional Schema</small></th><td class="art-set"><b>T3.1</b> Cross-simulator transfer</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t31-cross-simulator-transfer-6ade3ba5b04b81f86ad2e4c7">Models ↗</a></td><td><a href="https://wandb.ai/agrimanager/t3-1-cross-simulator">Training curves ↗</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main" title="WOFOST: e4_t31_cross_sim_wofost, DSSAT: e4_t31_cross_sim_dssat, Cycles: e4_t31_cross_sim_cycles_v2">Test set ↗</a></td></tr><tr><td class="art-set"><b>T3.2</b> Unified policy</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/t32-unified-policy-6ade3ba7acc7c9c710e0bb0b">Models ↗</a></td><td><a href="https://wandb.ai/agrimanager/t3-2-unified-policy">Training curves ↗</a></td><td><a href="https://huggingface.co/datasets/AgriManager-Framework/agrimanager-test-suite/tree/main" title="WOFOST: e4_t32_wofost_heldout, DSSAT: e4_t32_dssat_profit, Cycles: e4_t32_cycles_profit_v2">Test set ↗</a></td></tr><tr><th rowspan="1" class="art-tier">Exploratory</th><td class="art-set">Other backbones and RL algorithms</td><td><a href="https://huggingface.co/collections/AgriManager-Framework/exploratory-backbones-and-rl-algorithms-6ade3ba8d49bbdd8dd7ef45f">Models ↗</a></td><td><a href="https://wandb.ai/agrimanager/exploratory-backbones-algorithms">Training curves ↗</a></td><td><span class="na">—</span></td></tr></tbody></table></div></div>
+</div></section>
+
+
+<section class="block" id="tier-1"><div class="wrap">
+  <div class="fnum">Tier 1 · within schema</div>
+  <h2>Held-out conditions, same interface</h2>
+  <p class="lead">The interface stays fixed while weather, crop or prices move outside the training range: does the RL-trained policy still beat its own starting point?</p>
+  <ul class="t1rows block-body"><li><span class="ck">✓</span><div><b>Weather regime</b><span>Every seed above the untrained model on every test split (30 of 30 seed–split pairs); every think seed also above every same-budget PPO seed where a PPO baseline was run.</span></div></li><li><span class="ck">✓</span><div><b>Crop variety</b><span>Every seed above the untrained model on every test split (18 of 18 seed–split pairs); every think seed also above every same-budget PPO seed where a PPO baseline was run.</span></div></li><li><span class="ck">✓</span><div><b>Price regime</b><span>Every seed above the untrained model on every test split (9 of 9 seed–split pairs); every think seed also above every same-budget PPO seed where a PPO baseline was run.</span></div></li></ul>
+  <div class="card curve-big val-slot" id="valSlot">
+    <div class="vh"><b>Validation return during RL training (exploratory)</b><span>crop-variety · 8 training crops · 3 seeds</span></div>
+    <div data-valcurve="full"></div>
+  </div>
+  <div class="nn-block sub-block" id="neural">
+    <h3>LLM vs. neural baselines</h3>
+    <p class="lead">Think against fixed-interface neural policies trained on the simulator's numeric state, scored on the same test splits.</p>
+    <div class="table-wrap"><table class="nn-table">
+      <thead><tr><th>Baseline</th><th>Weather regime</th><th>Crop variety</th><th>Price regime</th></tr></thead>
+      <tbody>
+        <tr><th>Neural-network PPO<small>same budget, one gradient pass per batch</small></th><td><b>Think ahead on 10/10</b><span>every think seed above every baseline seed on 10/10; +1.16 to +3.54 t/ha</span></td><td><b>Think ahead on 6/6</b><span>every think seed above every baseline seed on 6/6; +1.25 to +1.84 t/ha</span></td><td><b>Think ahead on 1/1</b><span>every think seed above every baseline seed on 1/1; +$1,456/ha over 19 years</span></td></tr>
+        <tr><th>A2C<small>potato only</small></th><td><b>Think ahead on 5/5</b><span>every think seed above every baseline seed on 5/5; +1.16 to +2.83 t/ha</span></td><td class="na">—</td><td class="na">—</td></tr>
+        <tr><th>DQN<small>potato only</small></th><td><b>Think ahead on 5/5</b><span>every think seed above every baseline seed on 5/5; +9.07 to +12.30 t/ha</span></td><td class="na">—</td><td class="na">—</td></tr>
+      </tbody></table></div>
+    <p class="note read">Read across a row: how think compares with that baseline in each setting. Ranges are think minus baseline in raw objective (profit-equivalent t/ha; price-regime in $/ha over 19 years), mean over three seeds. With the same budget, every neural baseline stays below think.</p>
+  </div>
+  <div id="rl-changes" class="sub-block">
+    <h3>What RL changes</h3>
+    <p class="lead">The same Qwen3-4B backbone before and after RL on one 19-year Cycles crop-planning scenario from the price-regime test set.</p>
+    <div class="card pair-card" data-paired></div>
+  </div>
+  <details class="paperfig"><summary>View the paper figure</summary><figure class="figwrap"><img src="assets/fig_tier1.webp" alt="Paper figure: Tier 1 results" width="1800" decoding="async"><figcaption>Paper figure, Tier 1. Weather-regime in gain over no-action (profit-equivalent t/ha); crop-variety and price-regime in normalized return.</figcaption></figure></details>
+</div></section>
+
+<section class="block" id="tier-2"><div class="wrap">
+  <div class="fnum">Tier 2 · single-axis schema</div>
+  <h2>One part of the interface changes</h2>
+  <p class="lead">Each panel changes one schema axis at test time: what the policy observes, which actions it may take, or which objective scores it.</p>
+  <div class="block-body res-grid">
+    <div class="panel viz"><div class="vh"><b>Observations</b><span>Σ<sub>O</sub> · think · normalized return</span></div>
+      <div data-obsbars="all"></div>
+      <p class="note read">Trained on the full observation, tested on each variant. The full schema scores 5.42; every renamed, added or reduced variant stays at 4.35 or above. Without the resource state the mean falls to 0.94 ± 1.40, below the untrained model (1.39). Bars: mean ± SD over three seeds; tick: the untrained model.</p></div>
+    <div class="panel viz"><div class="vh"><b>Actions</b><span>Σ<sub>A</sub> · per training family</span></div>
+      <div data-families></div>
+      <p class="note read">Seeds above the untrained model on held-out menus: Family A <code>ln</code> 3/3, <code>lnw</code> 3/3, <code>lw</code> 3/3; Family B <code>ln</code> 2/3, <code>lnw</code> 1/3, <code>lnpkw</code> 2/3. Consistent with joint action coverage; menu wrappers also differ (paper §4.2).</p></div>
+    <div class="panel viz wide" id="action-baselines"><div class="vh"><b>Action menu vs. neural baselines</b><span>Σ<sub>A</sub> · think vs. masked PPO vs. PPO trained on the test menu · normalized return</span></div>
+      <div data-t22base></div>
+      <p class="note read">Masked PPO acts over one shared action vocabulary with a mask for each menu and trains on its family's two training menus; target-trained PPO trains on the test menu itself, a menu-specific reference. Family A is clearly above masked PPO on all four menus and matches or exceeds the target-trained reference (clearly on lnpkw). Family B is ahead of masked PPO in mean but within seed noise, and roughly level with the target-trained reference. Family A: think above masked PPO in mean on 4/4 menus, by 3.2 to 14.4 propagated SD; against target-trained PPO -0.08 to +9.72 SD. Family B: think above masked PPO in mean on 4/4 menus, by 0.1 to 1.0 propagated SD; against target-trained PPO -0.62 to +0.49 SD.</p></div>
+    <div class="panel viz wide"><div class="vh"><b>Objectives</b><span>Σ<sub>R</sub> · yield-only training · normalized return</span></div>
+      <div data-rewards></div>
+      <p class="note read">Trained on yield alone, scored under each objective: profit 4.76 vs 3.03 untrained (3/3 seeds above); water 5.68 vs 5.09 untrained (3/3 seeds above); nutrient 4.57 vs 2.66 untrained (3/3 seeds above). Bars: seed mean; tick: the untrained model.</p></div>
+  </div>
+  <details class="paperfig"><summary>View the paper figure</summary><figure class="figwrap"><img src="assets/fig_tier2.webp" alt="Paper figure: Tier 2 results" width="1800" decoding="async"><figcaption>Paper figure, Tier 2, in normalized return.</figcaption></figure></details>
+</div></section>
+
+<section class="block" id="tier-3"><div class="wrap">
+  <div class="fnum">Tier 3 · compositional schema</div>
+  <h2>New simulators and new combinations</h2>
+  <p class="lead">Tier 3 asks whether a policy can carry its skill to another simulator, or to a combination of interface components it saw only apart.</p>
+  <div class="block-body res-grid">
+    <div class="panel viz"><div class="vh"><b>Cross-simulator transfer</b><span>source → target · think</span></div><div class="matrix" data-matrix></div>
+      <p class="note read">Rows: training simulator; columns: test simulator. 4 of 6 cross-simulator cells (orange) fall below the untrained model on that target; compare within a column. Transfers into DSSAT gain only over an untrained model that fails the output format there. Normalized return.</p></div>
+    <div class="panel viz"><div class="vh"><b>Unified policy vs. specialist</b><span>held-out profit targets</span></div><div data-uvs></div>
+      <div class="legend" style="margin-top:8px"><span><i style="border:1.5px solid var(--muted);border-radius:50%"></i>untrained</span><span><i style="background:var(--blue);border-radius:50%"></i>unified (trained on other combinations)</span><span><i style="background:var(--green);transform:rotate(45deg);border-radius:2px"></i>specialist (trained on the target tuple)</span></div>
+      <p class="note read">On DSSAT the unified policy closes 86% of the specialist's gain over the untrained model (0.81 vs 0.94, from 0.00). On WOFOST (2.10 vs 2.35) and Cycles (0.96 vs 0.98) it stays below the untrained model. Normalized return, seed means; each row has its own scale.</p></div>
+    <div class="panel viz wide" id="curves">
+      <div class="vh cv-head"><div><b>Across training</b><span>unified policy · the three held-out profit targets</span></div>
+        <div class="seg small" role="tablist" id="curveTabs"><button role="tab" aria-selected="true" data-arm="think">Think</button><button role="tab" aria-selected="false" data-arm="no-think">No-think</button></div></div>
+      <div class="curves" data-curves="#curveTabs"></div>
+      <p class="note read">Scored on the test suite at each epoch. Line: mean of three training seeds; band: seed range. Epoch 0 is the untrained model, epochs 1–3 are intermediate checkpoints (exploratory), epoch 4 is the terminal checkpoint. Dashed: the specialist trained on that exact tuple. 0 = no-action.</p>
+    </div>
+  </div>
+  <p class="insight"><svg><use href="#i-bulb"/></svg><span><b>Additional insight</b>On Qwen, reasoning mainly stabilizes RL training; this does not hold for every task or backbone.</span></p>
+  <details class="paperfig"><summary>View the paper figure</summary><figure class="figwrap"><img src="assets/fig_tier3.webp" alt="Paper figure: Tier 3 results" width="1800" decoding="async"><figcaption>Paper figure, Tier 3, in normalized return.</figcaption></figure></details>
+</div></section>
+<section class="block" id="backbones"><div class="wrap">
+  <div class="fnum">Beyond the main runs</div>
+  <h2>Other backbones and RL algorithms <span class="h-tag">exploratory, one seed</span></h2>
+  <p class="lead">Think and no-think pairs on the unified-policy setting (Tier 3), one training seed per run, from the paper's appendix.</p>
+  <div class="bb-grid block-body">
+    <div class="panel"><div class="vh"><b>How much of its validation peak each run keeps</b></div>
+      <div class="table-wrap"><table class="bb-table">
+        <thead><tr><th rowspan="2">Backbone</th><th rowspan="2">RL algorithm</th><th colspan="2">Think</th><th colspan="2">No-think</th></tr>
+        <tr><th>peak step</th><th>loss</th><th>peak step</th><th>loss</th></tr></thead><tbody><tr><td>Qwen3-4B-Instruct</td><td>GRPO</td><td>800</td><td>0.00</td><td>200</td><td>1.32</td></tr><tr><td>Qwen3-4B-Instruct</td><td>DrGRPO</td><td>800</td><td>0.00</td><td>410</td><td>0.33</td></tr><tr><td>Qwen3-4B-Instruct</td><td>PPO</td><td>500</td><td>0.02</td><td>50</td><td>0.31</td></tr><tr><td>Qwen2.5-3B-Instruct</td><td>GRPO</td><td>740</td><td>0.02</td><td>360</td><td>1.53</td></tr></tbody></table></div>
+      <p class="note read">Validation reward averaged over the nine seen and held-out tuples, 80 evaluations per run. Loss = peak minus final value. In all four pairs, think peaks late and keeps nearly all of its peak; no-think peaks early and gives part of it back.</p></div>
+    <div class="panel bb-notes">
+      <div><b>Llama-3.2-3B reverses the ordering.</b><p>On the test suite its no-think arm leads on four of the five WOFOST tuples. On DSSAT profit both Llama arms score above the Qwen unified think policy: 1.10 (think) and 1.11 (no-think) in normalized return, from a single seed, against 0.81 ± 0.13.</p></div>
+      <div><b>Qwen3-8B no-think had persistent format failures.</b><p>Its training invalid-output rate started at 1.00 and averaged 0.83; the run stopped after 493 of 800 planned steps. The pair does not isolate reasoning from format compliance.</p></div>
+      <p class="note">So the reasoning result is stated for the Qwen backbones evaluated.</p>
+    </div>
+  </div>
+</div></section>
+</main>
+<footer class="footer" id="start">
+  <div class="wrap">
+    <h2>Start building with AgriManager</h2>
+    <div class="starts">
+      <a class="start main" href="docs/models.html"><span class="n">01</span><b>Train LLM Policies</b><span>Bring any LLM and RL algorithm. AgriManager turns crop simulators into RL environments for language-model policies.</span><div class="tags"><i>Qwen · Llama · …</i><i>GRPO · DrGRPO · PPO · …</i></div><span class="go">Supported models &amp; algorithms →</span></a>
+      <a class="start" href="docs/evaluation.html"><span class="n">02</span><b>Evaluate on the Benchmark</b><span>Compare models and RL algorithms on the same frozen held-out tests, across three tiers of schema shift.</span><div class="tags"><i>Within Schema</i><i>Single-Axis</i><i>Compositional</i></div><span class="go">Evaluation →</span></a>
+      <a class="start" href="docs/new-environment.html"><span class="n">03</span><b>Integrate New Simulators</b><span>Add a crop simulator, or define new observations, actions and goals, through one adapter.</span><div class="tags"><i>WOFOST · DSSAT · Cycles · your simulator</i></div><span class="go">Adapter guide →</span></a>
+    </div>
+    <p class="start-new"><a href="docs/quickstart.html">Quickstart →</a></p>
+    <div class="res">
+      <div>
+        <p class="eyebrow">Resources</p>
+        <div class="res-links">
+          <a href="#" data-todo="paper link not public yet">Paper <span>coming soon</span></a>
+          <a href="https://github.com/AgriManager-Framework/AgriManager">Code <span>github.com/AgriManager-Framework</span></a>
+          <a href="https://huggingface.co/AgriManager-Framework">Datasets &amp; Models <span>huggingface.co/AgriManager-Framework</span></a>
+          <a href="docs/index.html">Docs <span>documentation</span></a>
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow">Citation</p>
+        <div class="bib">
+<pre id="bibtex">@inproceedings{gui2026agrimanager,
+  title     = {AgriManager: A Framework and Benchmark for LLM-RL
+               Generalization in Agricultural Management},
+  author    = {Gui, Chi and Zheng, Junwen and Nigam, Ritwik and
+               Yang, Qianlan and Lang, Meagan and Dongre, Vardhan and
+               Barr, Jeremiah and Wang, Yu-Xiong and Adve, Vikram S.},
+  booktitle = {Advances in Neural Information Processing Systems
+               (Evaluations and Datasets Track)},
+  year      = {2026}
+}</pre>
+          <button type="button" id="bibCopy">Copy</button>
+        </div>
+      </div>
+    </div>
+    <div class="fine"><span class="fine-brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="292 177 1470 304" class="wordmark" role="img" aria-label="AgriManager" fill="none">
+  <path fill="var(--logo-green)" fill-rule="evenodd" d="M540,341 L539,340 L531,342 L521,342 L520,343 L497,344 L496,345 L470,347 L448,353 L432,361 L418,372 L407,384 L395,402 L382,428 L382,431 L394,419 L408,408 L437,392 L463,383 L479,380 L481,382 L458,391 L444,398 L427,409 L412,421 L395,438 L386,449 L387,450 L402,447 L432,446 L433,445 L452,443 L469,438 L487,428 L506,410 L515,397 L528,371 Z M968,297 L967,298 L967,387 L968,388 L990,388 L991,387 L991,298 L990,297 Z M955,296 L944,295 L937,297 L930,301 L923,309 L921,308 L921,298 L920,297 L898,297 L897,298 L897,387 L898,388 L921,388 L922,387 L922,339 L924,331 L933,321 L939,318 L944,317 L955,318 L956,317 L956,297 Z M880,297 L858,297 L857,298 L857,306 L855,307 L850,302 L841,297 L833,295 L821,295 L808,299 L802,303 L794,311 L787,326 L786,338 L785,339 L787,357 L793,370 L803,380 L813,385 L821,387 L838,386 L849,381 L856,376 L857,377 L857,387 L855,395 L847,404 L840,407 L828,408 L818,406 L807,401 L802,397 L791,414 L793,417 L804,423 L813,426 L818,426 L819,427 L844,427 L856,424 L864,420 L872,413 L879,400 L880,390 L881,389 L881,298 Z M827,316 L840,316 L845,318 L852,324 L857,335 L857,347 L853,357 L847,363 L840,366 L832,367 L831,366 L826,366 L820,363 L813,355 L811,349 L812,330 L814,326 L821,319 Z M707,261 L688,309 L684,322 L678,335 L674,348 L670,356 L666,369 L662,377 L661,382 L658,387 L659,388 L685,388 L687,386 L693,367 L697,362 L747,362 L750,366 L756,385 L758,388 L784,388 L785,386 L758,318 L756,310 L749,294 L738,263 L736,261 Z M721,292 L723,293 L737,331 L739,334 L740,338 L738,340 L705,340 L703,338 L713,313 L718,297 Z M975,253 L967,259 L965,263 L965,272 L968,277 L974,281 L984,281 L988,279 L993,273 L994,269 L993,262 L990,257 L986,254 Z M327,449 L327,451 L357,451 L369,421 L384,392 L399,371 L415,355 L443,338 L470,284 L470,282 L474,276 L474,274 L478,267 L481,265 L484,268 L511,324 L511,326 L513,328 L516,327 L531,327 L532,326 L547,326 L548,325 L559,325 L561,327 L550,356 L538,383 L538,387 L552,414 L552,416 L568,449 L571,451 L634,451 L635,450 L556,289 L556,287 L543,262 L543,260 L521,216 L521,214 L515,208 L512,207 L453,207 L446,212 Z"/>
+  <path fill="var(--logo-navy)" fill-rule="evenodd" d="M1726,296 L1714,295 L1706,297 L1699,301 L1692,309 L1690,308 L1690,298 L1689,297 L1667,297 L1666,298 L1666,387 L1667,388 L1689,388 L1690,387 L1690,337 L1692,331 L1701,321 L1711,317 L1724,317 L1726,318 L1727,317 L1727,297 Z M1588,299 L1581,303 L1572,311 L1564,326 L1563,336 L1562,337 L1562,348 L1563,349 L1564,359 L1569,370 L1581,382 L1586,385 L1600,389 L1622,389 L1633,386 L1639,383 L1649,375 L1649,373 L1637,362 L1635,362 L1629,367 L1623,370 L1604,371 L1596,367 L1588,358 L1586,350 L1588,348 L1654,348 L1655,347 L1655,334 L1652,322 L1648,314 L1636,302 L1625,297 L1615,295 L1604,295 Z M1586,332 L1589,324 L1596,317 L1606,313 L1617,314 L1623,317 L1629,323 L1632,330 L1632,332 L1629,335 L1591,335 Z M1551,297 L1529,297 L1528,298 L1528,306 L1526,307 L1514,298 L1502,295 L1494,295 L1493,296 L1488,296 L1476,301 L1465,311 L1460,320 L1457,331 L1457,352 L1459,360 L1467,374 L1474,380 L1488,386 L1508,386 L1512,385 L1520,381 L1526,376 L1528,377 L1529,384 L1528,385 L1528,391 L1525,398 L1519,404 L1512,407 L1507,408 L1491,407 L1479,402 L1474,398 L1472,398 L1462,414 L1464,417 L1473,422 L1491,427 L1514,427 L1523,425 L1533,421 L1544,411 L1549,402 L1552,388 L1552,298 Z M1501,315 L1508,315 L1517,318 L1525,326 L1529,338 L1528,350 L1526,355 L1518,363 L1508,367 L1500,367 L1491,363 L1485,357 L1481,348 L1481,335 L1485,325 L1491,319 Z M1367,305 L1366,308 L1372,321 L1375,321 L1380,318 L1393,314 L1410,314 L1417,317 L1420,320 L1422,324 L1422,331 L1419,334 L1387,336 L1376,339 L1367,344 L1361,352 L1359,361 L1360,371 L1364,379 L1369,384 L1381,389 L1400,389 L1410,386 L1421,378 L1423,380 L1423,387 L1424,388 L1444,388 L1445,387 L1445,376 L1446,375 L1445,373 L1446,371 L1445,369 L1446,364 L1445,360 L1445,319 L1440,308 L1436,304 L1425,298 L1409,295 L1398,295 L1397,296 L1386,297 L1374,301 Z M1422,349 L1422,360 L1420,364 L1412,371 L1400,374 L1390,373 L1382,365 L1382,359 L1389,351 L1401,348 L1415,348 L1416,347 L1420,347 Z M1338,303 L1332,299 L1324,296 L1310,295 L1298,298 L1284,308 L1283,307 L1283,298 L1282,297 L1260,297 L1259,298 L1259,387 L1260,388 L1282,388 L1283,387 L1283,331 L1286,325 L1292,319 L1299,316 L1311,316 L1317,319 L1322,325 L1324,332 L1324,387 L1325,388 L1347,388 L1348,387 L1348,326 L1345,313 Z M1168,304 L1166,306 L1166,308 L1170,318 L1173,322 L1177,319 L1192,314 L1210,314 L1217,317 L1221,321 L1222,331 L1219,334 L1194,335 L1193,336 L1182,337 L1168,343 L1161,351 L1159,357 L1159,369 L1163,379 L1170,385 L1181,389 L1200,389 L1213,384 L1220,378 L1222,379 L1222,387 L1223,388 L1244,388 L1245,387 L1245,319 L1240,308 L1230,300 L1222,297 L1211,296 L1210,295 L1197,295 L1196,296 L1185,297 L1181,299 L1178,299 Z M1222,349 L1221,363 L1215,369 L1209,372 L1199,374 L1190,373 L1186,371 L1182,366 L1183,356 L1191,350 L1200,348 L1216,348 L1217,347 L1220,347 Z M1011,262 L1011,387 L1012,388 L1033,388 L1034,387 L1034,310 L1035,309 L1038,311 L1069,376 L1087,376 L1089,374 L1099,351 L1121,308 L1123,309 L1123,387 L1125,388 L1143,388 L1147,387 L1147,269 L1146,268 L1147,262 L1146,261 L1118,261 L1116,263 L1079,342 L1076,340 L1069,323 L1041,263 L1039,261 L1012,261 Z"/>
+</svg>
+<span>NeurIPS 2026 Evaluations &amp; Datasets Track</span></span></div>
+  </div>
+</footer>
+<script src="data/site3.js?v=10270734"></script>
+<script src="assets/site3.js?v=10270734"></script>
+</body>
+</html>

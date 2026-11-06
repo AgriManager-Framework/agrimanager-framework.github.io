@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tasks · AgriManager</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+<script>(function () { try { var t = localStorage.getItem('agri-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="assets/style.css?v=20261025g" />
+</head>
+<body>
+<header class="top">
+  <button class="hbtn menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="index.html"><img class="logo" src="assets/logo-icon.svg" alt="" /> <span class="wm"><span class="wm-agri">Agri</span><span class="wm-mgr">Manager</span></span> <span class="sep">/</span> <span class="doctag">Docs</span></a>
+  <div class="spacer"></div>
+  <a class="hlink" id="siteLink" href="../">Website</a>
+  <a class="hlink" id="repoLink" href="https://github.com/AgriManager-Framework/AgriManager" target="_blank" rel="noopener">GitHub</a>
+  <button class="hbtn" id="themeBtn" aria-label="Toggle light or dark theme"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+</header>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="wrap">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <h1>Tasks</h1>
+    <p class="subtitle">The parts a task is built from — simulator, observation, action, and reward.</p>
+
+    <p>
+      A task is built from a few interchangeable parts: the <b>simulator</b> and the <b>schema</b> it presents to
+      the policy — the observation (<code>Σ_O</code>), the action menu (<code>Σ_A</code>), and the reward
+      (<code>Σ_R</code>). These are what you vary to build a new task or a benchmark variant. The observation and
+      action types below are WOFOST's, the primary simulator.
+    </p>
+
+    <h2 id="task-families">Two task families<a class="ah" href="#task-families">#</a></h2>
+    <ul>
+      <li><b>Crop-growth.</b> Every few simulated days the agent decides whether to fertilize or irrigate; the
+        simulator advances soil and crop state to the next decision. The objective is to maximize profit over a
+        single growing season.</li>
+      <li><b>Crop-planning.</b> At the start of each year the agent picks the crop and planting week; the simulator
+        runs the full annual cycle, including off-season soil dynamics. The objective is to maximize gross revenue
+        over a multi-year rotation.</li>
+    </ul>
+
+    <h2 id="simulators">Simulators<a class="ah" href="#simulators">#</a></h2>
+    <p>The underlying dynamics. Each crop model is reached through a Gymnasium wrapper that the adapter turns into
+       a text interface. Three are integrated:</p>
+    <ul>
+      <li>
+        <b>WOFOST</b> (WOrld FOod STudies) — a mechanistic, dynamic crop-growth model maintained by Wageningen
+        University &amp; Research. It simulates daily crop growth from underlying processes such as photosynthesis
+        and respiration, given weather, soil, and management, producing attainable yield, biomass, water use, and
+        nutrient uptake.
+        <br><span style="color:var(--text-soft)">Model: <a href="https://www.wur.nl/en/research/products-services/wofost-world-food-studies" target="_blank" rel="noopener">wur.nl</a> · Used via <a href="https://github.com/Intelligent-Reliable-Autonomous-Systems/WOFOSTGym" target="_blank" rel="noopener">WOFOST-Gym</a> (Solow et al., 2025). The primary simulator: weather-regime, crop-variety, all of Tier 2, and the WOFOST parts of Tier 3.</span>
+      </li>
+      <li>
+        <b>Cycles</b> — a daily time-step agroecosystem model developed at Penn State University. It simulates the
+        coupled water, carbon, and nitrogen cycles together with plant growth across multi-year, multi-crop
+        rotations.
+        <br><span style="color:var(--text-soft)">Model: <a href="https://github.com/PSUmodeling/Cycles" target="_blank" rel="noopener">PSUmodeling/Cycles</a> · Used via its Gym wrapper <a href="https://github.com/kora-labs/cyclesgym" target="_blank" rel="noopener">CycleGym</a> (Turchetta et al., NeurIPS 2022). Crop planning for the price-regime setting, and maize crop growth in Tier 3.</span>
+      </li>
+      <li>
+        <b>DSSAT</b> (Decision Support System for Agrotechnology Transfer) — a suite of dynamic crop-simulation
+        models for over 45 crops, maintained by the DSSAT Foundation with the University of Florida. It simulates
+        crop growth, development, and yield as a function of soil–plant–atmosphere dynamics.
+        <br><span style="color:var(--text-soft)">Model: <a href="https://dssat.net" target="_blank" rel="noopener">dssat.net</a> · Used via <a href="https://rgautron.gitlabpages.inria.fr/gym-dssat-docs/" target="_blank" rel="noopener">gym-DSSAT</a> (Gautron et al., 2022). Maize crop growth in Tier 3; needs the separate <a href="dssat.html">DSSAT runtime</a>.</span>
+      </li>
+    </ul>
+
+    <h2 id="observations">Observations<a class="ah" href="#observations">#</a></h2>
+    <p>What the policy sees each step (<code>Σ_O</code>). The default WOFOST observation has 15 fields — crop
+       status, soil nutrients, soil &amp; water, cumulative actions, and weather. The schema can be reshaped:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Type</th><th>What changes</th></tr>
+        <tr><td><b>Full</b> <span style="color:var(--muted)">(default)</span></td><td>all 15 baseline fields.</td></tr>
+        <tr><td><b>Missing-information</b></td><td>drop one block — stage &amp; time, resource state, management history, or weather.</td></tr>
+        <tr><td><b>Synonym rename</b></td><td>same values, agronomic-synonym labels (plus a glossary).</td></tr>
+        <tr><td><b>Superset</b></td><td>add extra growth variables (LAI, TAGP, RD, …).</td></tr>
+        <tr><td><b>Anonymized</b></td><td>labels replaced with A–O (plus a glossary) — a label-grounding probe.</td></tr>
+      </table>
+    </div>
+
+    <h2 id="actions">Actions<a class="ah" href="#actions">#</a></h2>
+    <p>The management actions available (<code>Σ_A</code>), each as discrete amounts. On WOFOST the
+       <code>env_id</code> sets which inputs the policy may apply:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th><code>env_id</code></th><th>Available inputs</th></tr>
+        <tr><td><code>lnpkw-v0</code> <span style="color:var(--muted)">(default)</span></td><td>nitrogen, phosphorus, potassium, irrigation</td></tr>
+        <tr><td><code>lnpk-v0</code></td><td>nitrogen, phosphorus, potassium</td></tr>
+        <tr><td><code>lnw-v0</code></td><td>nitrogen, irrigation</td></tr>
+        <tr><td><code>ln-v0</code></td><td>nitrogen only</td></tr>
+        <tr><td><code>lw-v0</code></td><td>irrigation only</td></tr>
+      </table>
+    </div>
+
+    <h2 id="rewards">Rewards<a class="ah" href="#rewards">#</a></h2>
+    <p>The objective the policy optimizes (<code>Σ_R</code>), declared in the prompt via an
+       <code>objective_id</code>. Training can mix several at once:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th><code>objective_id</code></th><th>Maximizes</th></tr>
+        <tr><td><code>profit_max</code></td><td>terminal yield (WSO) minus input costs — the default.</td></tr>
+        <tr><td><code>yield_max</code></td><td>terminal yield, normalized by a calibrated reference.</td></tr>
+        <tr><td><code>water_stewardship</code></td><td>yield while penalizing irrigation use and water-budget violations.</td></tr>
+        <tr><td><code>nutrient_stewardship</code></td><td>yield while avoiding nutrient over-application.</td></tr>
+      </table>
+    </div>
+    <p>Cycles <b>crop-planning</b> tasks optimize a simulator-native gross-revenue reward (yield × crop
+       price), held fixed while the price regime shifts.</p>
+
+    <h2 id="anatomy">Anatomy of a prompt<a class="ah" href="#anatomy">#</a></h2>
+    <p>Each turn the environment assembles one prompt. Three blocks are the schema —
+       <code>Σ_O</code>, <code>Σ_A</code>, <code>Σ_R</code> — and only these shift across the
+       <a href="benchmark.html">benchmark</a>; the rest is fixed.</p>
+    <figure>
+      <div class="frame light-art">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 312" style="max-width:460px" font-family="system-ui, sans-serif" role="img" aria-label="The blocks of a turn prompt">
+          <rect x="20" y="16" width="400" height="40" rx="8" fill="#f7f8f7" stroke="#e2e6e3"/>
+          <rect x="20" y="16" width="5" height="40" fill="#b8c0c8"/>
+          <text x="40" y="41" font-size="14" font-weight="600" fill="#222">System prompt</text>
+
+          <rect x="20" y="64" width="400" height="40" rx="8" fill="#fff8ee" stroke="#e6ddcb"/>
+          <rect x="20" y="64" width="5" height="40" fill="#d68f2e"/>
+          <text x="40" y="89" font-size="14" font-weight="600" fill="#222">Management objective</text>
+          <rect x="336" y="73" width="72" height="22" rx="11" fill="#fbecd5"/>
+          <text x="372" y="88" font-size="12" font-weight="700" fill="#a96f1e" text-anchor="middle">Σ_R</text>
+
+          <rect x="20" y="112" width="400" height="40" rx="8" fill="#eef3fb" stroke="#d6e0ef"/>
+          <rect x="20" y="112" width="5" height="40" fill="#4a78c9"/>
+          <text x="40" y="137" font-size="14" font-weight="600" fill="#222">Current observation</text>
+          <rect x="336" y="121" width="72" height="22" rx="11" fill="#e0e9f7"/>
+          <text x="372" y="136" font-size="12" font-weight="700" fill="#3b6fc9" text-anchor="middle">Σ_O</text>
+
+          <rect x="20" y="160" width="400" height="40" rx="8" fill="#eef6ee" stroke="#d6e7d6"/>
+          <rect x="20" y="160" width="5" height="40" fill="#3b8c3b"/>
+          <text x="40" y="185" font-size="14" font-weight="600" fill="#222">Available actions</text>
+          <rect x="336" y="169" width="72" height="22" rx="11" fill="#e0eede"/>
+          <text x="372" y="184" font-size="12" font-weight="700" fill="#357a35" text-anchor="middle">Σ_A</text>
+
+          <rect x="20" y="208" width="400" height="40" rx="8" fill="#f7f8f7" stroke="#e2e6e3"/>
+          <rect x="20" y="208" width="5" height="40" fill="#b8c0c8"/>
+          <text x="40" y="233" font-size="14" font-weight="600" fill="#222">Reasoning guidance</text>
+
+          <rect x="20" y="256" width="400" height="40" rx="8" fill="#f7f8f7" stroke="#e2e6e3"/>
+          <rect x="20" y="256" width="5" height="40" fill="#b8c0c8"/>
+          <text x="40" y="281" font-size="14" font-weight="600" fill="#222">Response format</text>
+        </svg>
+      </div>
+      <figcaption>The Σ blocks are the schema (what shifts across the benchmark); the rest is fixed scaffolding.</figcaption>
+    </figure>
+
+    <h2 id="full-turn">A full turn<a class="ah" href="#full-turn">#</a></h2>
+    <p>A real turn — the assembled prompt, and the policy's reasoning and action.</p>
+    <div class="code scroll prewrap">
+      <div class="code-head"><span>turn 14 · wofost potato · profit_max</span></div>
+<pre><span class="c">══ SYSTEM ══</span>
+You are an agricultural management expert. Optimize the management objective specified in the user message. Use only the available actions and respond in the required format.
+
+<span class="c">══ TURN 14 · USER ══</span>
+We are growing potato from sow to maturity. The planned growing window spans 180 days, and actions are taken every 10 days. Today is day 140 of the season, corresponding to May 20.
+
+<span class="k">&lt;management objective id="profit_max"&gt;</span>
+Goal: maximize terminal WSO-equivalent profit, not raw yield.
+
+Score at the end of the season:
+profit_wso_kg_ha =
+  final_WSO_kg_ha
+  - 3.5 * total_N_kg_ha
+  - 5.5 * total_P_kg_ha
+  - 2.25 * total_K_kg_ha
+  - 0.5 * total_irrig_cm
+
+Input unit costs:
+- Nitrogen: 1 kg/ha N costs 3.5 kg/ha WSO-equivalent.
+- Phosphorus: 1 kg/ha P costs 5.5 kg/ha WSO-equivalent.
+- Potassium: 1 kg/ha K costs 2.25 kg/ha WSO-equivalent.
+- Irrigation: 1 cm water costs 0.5 kg/ha WSO-equivalent.
+
+Successful crop seasons usually produce final yield on the order of thousands of kg/ha.
+
+Decision rule: apply an input only if that input is expected to increase final WSO by more than its WSO-equivalent cost.
+<span class="k">&lt;/management objective&gt;</span>
+
+Below is the current observation for this step.
+
+<span class="k">&lt;current observation&gt;</span>
+[Crop status]
+- Finish flag (1 means the season has ended): 0
+- Development stage index: 1.136 (DVS=1 indicates flowering; DVS=2 indicates maturity)
+- Storage organ dry matter (kg/ha; harvestable yield biomass proxy): 27.17
+[Soil nutrients]
+- Available soil nitrogen (kg/ha): 8.307
+- Available soil phosphorus (kg/ha): 30.83
+- Available soil potassium (kg/ha): 0.011
+[Soil &amp; water]
+- Root-zone soil moisture (fraction): 0.3302
+[Cumulative actions]
+- Cumulative nitrogen applied so far (kg/ha): 40
+- Cumulative phosphorus applied so far (kg/ha): 40
+- Cumulative potassium applied so far (kg/ha): 0
+- Cumulative irrigation depth applied so far (cm): 0
+[Weather]
+- Daily solar radiation (J/m²/day): 1.629e+07
+- Mean air temperature (°C): 17.03
+- Daily rainfall (cm): 0.216
+<span class="k">&lt;/current observation&gt;</span>
+
+Available actions (pick exactly one):
+- Do nothing.
+- Apply nitrogen fertilizer (20.0, 40.0, 60.0, or 80.0 kg/ha).
+- Apply phosphorus fertilizer (20.0, 40.0, 60.0, or 80.0 kg/ha).
+- Apply potassium fertilizer (20.0, 40.0, 60.0, or 80.0 kg/ha).
+- Irrigate with 5.0, 10.0, 15.0, or 20.0 cm of water.
+
+Please reason briefly before action about:
+1. State grounding: describe the current agronomic state and the main limiting factor based on the current observations
+2. Decision: choose the action that best balances final-yield gains against input costs at this step
+
+Keep the reasoning concise and decision-focused. Do not restate the full input.
+
+Respond using the exact format: &lt;tool_call&gt; ... &lt;/tool_call&gt; &lt;answer&gt; ... &lt;/answer&gt; with no extra text.
+
+Example: &lt;tool_call&gt;[reasoning content]&lt;/tool_call&gt; &lt;answer&gt;Apply 20.0 kg/ha nitrogen fertilizer.&lt;/answer&gt;
+
+<span class="c">══ TURN 14 · ASSISTANT ══</span>
+<span class="k">&lt;tool_call&gt;</span>[State grounding: The crop is at DVS 1.136, indicating it is in the flowering stage, with a high storage organ dry matter (27.17 kg/ha), suggesting strong yield potential. Soil nitrogen (8.307 kg/ha) and phosphorus (30.83 kg/ha) are already adequate, and potassium is critically low (0.011 kg/ha), which is essential for tuber development and dry matter accumulation. Root-zone moisture (33.02%) is below optimal, indicating a water stress concern. However, the primary limiting factor is potassium, as its deficiency directly impacts tuber quality and dry matter retention. Nitrogen and phosphorus have been heavily applied (40 kg/ha each), raising input costs without clear yield gains. Irrigation is not currently justified given the moderate moisture and high solar radiation. Decision: Apply 40.0 kg/ha potassium fertilizer, as it is the most likely to boost dry matter and yield without excessive cost, aligning with the objective of maximizing WSO-equivalent profit.]<span class="k">&lt;/tool_call&gt;</span> <span class="k">&lt;answer&gt;</span>Apply 40.0 kg/ha potassium fertilizer.<span class="k">&lt;/answer&gt;</span></pre>
+    </div>
+    <p>The environment parses the <code>&lt;answer&gt;</code>, steps the simulator, and returns the next
+       observation and a scalar reward.</p>
+
+    <div class="pagenav" id="pagenav"></div>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+<script src="assets/app.js?v=20261025f"></script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reproducing the paper · AgriManager</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+<script>(function () { try { var t = localStorage.getItem('agri-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="assets/style.css?v=20261025g" />
+</head>
+<body>
+<header class="top">
+  <button class="hbtn menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="index.html"><img class="logo" src="assets/logo-icon.svg" alt="" /> <span class="wm"><span class="wm-agri">Agri</span><span class="wm-mgr">Manager</span></span> <span class="sep">/</span> <span class="doctag">Docs</span></a>
+  <div class="spacer"></div>
+  <a class="hlink" id="siteLink" href="../">Website</a>
+  <a class="hlink" id="repoLink" href="https://github.com/AgriManager-Framework/AgriManager" target="_blank" rel="noopener">GitHub</a>
+  <button class="hbtn" id="themeBtn" aria-label="Toggle light or dark theme"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+</header>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="wrap">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <h1>Reproducing the paper</h1>
+    <p class="subtitle">From checkpoint revisions to the CSV rows behind every table and figure.</p>
+
+    <p>Every number in the paper traces to a row of a CSV table in <code>results/tables/</code>, and every table traces to scenario-level
+       records produced by scoring a named checkpoint revision on the frozen <a href="test-suite.html">held-out test
+       suite</a>.</p>
+
+    <h2 id="pipeline">The pipeline<a class="ah" href="#pipeline">#</a></h2>
+    <div class="code plain">
+      <div class="code-head"><span>pipeline</span></div>
+<pre>checkpoint revisions (step-N)            scripted and NN policies
+          │                                        │
+  e5_evaluate_checkpoint.sh            run_e4_anchors.sh, run_eval_*nn*_e4.sh
+          └──────────── result bundles ────────────┘
+                              │   per-scenario outputs + eval_manifest.json
+      analysis/test_suite/extract_e4.py   →  one row per scenario
+                              │
+      analysis/test_suite/e4_tables.py    →  results/tables/*.csv
+                              │
+      analysis/test_suite/make_figures.py →  results/figures/</pre>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Step</th><th>Script</th><th>What it does</th></tr>
+        <tr><td>Score</td><td><code>entrypoints/eval/e5_evaluate_checkpoint.sh</code>; <code>run_e4_anchors.sh</code>; <code>run_eval_*nn*_e4.sh</code></td><td>one result bundle per checkpoint revision and setting (<a href="evaluation.html">Evaluation</a>)</td></tr>
+        <tr><td>Extract</td><td><code>analysis/test_suite/extract_e4.py --data-root &lt;result roots&gt; --out &lt;dir&gt;</code></td><td>reads every bundle, takes the metric each split declares as primary, writes one row per scenario, and checks each split's mean against the evaluator's own summary</td></tr>
+        <tr><td>Tabulate</td><td><code>analysis/test_suite/e4_tables.py --episodes &lt;dir&gt;/e4_episodes.parquet</code></td><td>selects each seed's terminal checkpoint, computes cell statistics, paired and between-method comparisons, reference gaps and normalized scores</td></tr>
+        <tr><td>Draw</td><td><code>analysis/test_suite/make_figures.py</code></td><td>redraws the three tier figures from the CSVs into <code>results/figures/</code>; the paper's final-layout figure scripts are kept with the paper sources</td></tr>
+      </table>
+    </div>
+    <p><code>results/scoring_manifest.tsv</code> lists every checkpoint revision scored for the paper with its evaluator
+       arguments; feed it to <code>entrypoints/tools/e4_score_worker.sh --queue</code> to re-score. NN results are read
+       from <code>experiments/*/results/nn_eval_e4/</code>, or from the directory given with <code>--nn-root</code>.</p>
+    <div class="note warn">
+      <span class="nt">Per-run records</span>
+      <p>The final tables in <code>results/tables/</code> combine the September 2026 scoring with the October 2026
+      re-scoring of the Tier 3 Cycles cells on the rebuilt suites. Part of the September per-run bundles and the
+      scenario-level episode file were lost with a storage allocation; the aggregate tables survived. The bundles are
+      being regenerated by re-scoring the revisions in <code>results/scoring_manifest.tsv</code>. Until that finishes,
+      some cells reproduce only from the aggregate CSVs.</p>
+    </div>
+
+    <h2 id="tables">Paper items and their CSVs<a class="ah" href="#tables">#</a></h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Paper item</th><th>CSV</th></tr>
+        <tr><td>Tier 1, 2, 3 figures; per-seed tables</td><td><code>e4_by_seed.csv</code></td></tr>
+        <tr><td>Raw returns with mean and SD over seeds</td><td><code>e4_cells.csv</code></td></tr>
+        <tr><td>Reference returns, gaps, which targets normalize</td><td><code>e4_anchors.csv</code></td></tr>
+        <tr><td>Normalized scores</td><td><code>e4_normalized.csv</code></td></tr>
+        <tr><td>Think versus no-think</td><td><code>e4_paired.csv</code></td></tr>
+        <tr><td>LLM-RL versus NN baselines</td><td><code>e4_vs_neural.csv</code></td></tr>
+        <tr><td>Unified policy versus cross-simulator specialists</td><td><code>e4_specialist.csv</code></td></tr>
+        <tr><td>Invalid-output rates</td><td><code>e4_by_seed.csv</code> (<code>invalid_rate</code>)</td></tr>
+        <tr><td>Training curves (exploratory)</td><td>experiment-tracker exports; outside the confirmatory pipeline</td></tr>
+      </table>
+    </div>
+    <p>Method labels in the CSVs predate the final naming: <code>Ag heuristic (paper)</code> is the scripted
+       agronomic reference used in the paper and <code>Ag heuristic (current)</code> the current code version.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>File</th><th>One row per</th><th>Key columns</th></tr>
+        <tr><td><code>e4_by_seed.csv</code></td><td>setting × cell × method × arm × seed × target</td><td><code>objective</code>, <code>metric</code>, <code>n_scenarios</code>, <code>invalid_rate</code></td></tr>
+        <tr><td><code>e4_cells.csv</code></td><td>setting × cell × method × arm × target</td><td><code>mean</code>, <code>sd</code>, <code>n_seeds</code></td></tr>
+        <tr><td><code>e4_anchors.csv</code></td><td>target</td><td><code>no_action</code>, <code>heuristic_paper</code>, <code>heuristic_current</code>, <code>gap_paper</code>, <code>think_gain</code>, <code>gap_usable</code></td></tr>
+        <tr><td><code>e4_normalized.csv</code></td><td>arm × target</td><td><code>status</code>, <code>norm_mean</code>, <code>norm_sd</code>, <code>raw_mean</code></td></tr>
+        <tr><td><code>e4_paired.csv</code></td><td>comparison × target</td><td><code>mean_diff</code>, <code>sd_over_seeds</code>, <code>seeds_positive</code></td></tr>
+        <tr><td><code>e4_vs_neural.csv</code>, <code>e4_specialist.csv</code></td><td>comparison × target</td><td><code>mean_diff</code>, <code>propagated_sd</code>, <code>diff_in_prop_sd</code>, <code>all_a_seeds_above_all_b</code></td></tr>
+      </table>
+    </div>
+
+    <h2 id="statistics">Statistics<a class="ah" href="#statistics">#</a></h2>
+    <ul>
+      <li><b>Cells.</b> Mean and SD over the three training seeds of an arm; each seed's value is its mean over the
+        scenarios of the split.</li>
+      <li><b>Think versus no-think.</b> Paired by seed (the arms share the training seed) and by scenario.</li>
+      <li><b>Between methods</b> (LLM-RL versus NN, unified versus specialist). Seeds are treated as independent; the
+        difference is reported in units of the propagated SD, <code>sqrt(sd_a² + sd_b²)</code>.</li>
+      <li><b>Confirmatory and exploratory.</b> Three-seed test-suite results are confirmatory. Results only on
+        validation or from one seed are exploratory and labelled as such, for example training curves and the
+        backbone comparisons.</li>
+    </ul>
+
+    <div class="pagenav" id="pagenav"></div>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+<script src="assets/app.js?v=20261025f"></script>
+</body>
+</html>

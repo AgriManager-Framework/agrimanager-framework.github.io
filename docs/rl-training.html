@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RL training · AgriManager</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+<script>(function () { try { var t = localStorage.getItem('agri-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="assets/style.css?v=20261025g" />
+</head>
+<body>
+<header class="top">
+  <button class="hbtn menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="index.html"><img class="logo" src="assets/logo-icon.svg" alt="" /> <span class="wm"><span class="wm-agri">Agri</span><span class="wm-mgr">Manager</span></span> <span class="sep">/</span> <span class="doctag">Docs</span></a>
+  <div class="spacer"></div>
+  <a class="hlink" id="siteLink" href="../">Website</a>
+  <a class="hlink" id="repoLink" href="https://github.com/AgriManager-Framework/AgriManager" target="_blank" rel="noopener">GitHub</a>
+  <button class="hbtn" id="themeBtn" aria-label="Toggle light or dark theme"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+</header>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="wrap">
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main>
+    <h1>RL training</h1>
+    <p class="subtitle">How training works here, the options you control, and how the paper's runs were set up.</p>
+
+    <p>
+      Training is multi-turn <b>GRPO</b> on <a href="https://github.com/verl-project/verl" target="_blank" rel="noopener">VeRL</a>,
+      launched with <code>entrypoints/train/train.sh</code> (default config <code>agri_grpo</code>). The policy
+      rolls out a season turn by turn and the trajectory return drives the update — see
+      <a href="framework.html">Framework</a> for the loop and <a href="quickstart.html">Quick start</a> for the
+      commands. The default config already enables GRPO, the reward-variance filter and per-turn training; the
+      response format (think or no-think) is set per dataset.
+    </p>
+
+    <h2 id="joint">One policy across simulators<a class="ah" href="#joint">#</a></h2>
+    <p>The policy is <b>prompt-conditioned</b>: it reads the schema — observations, action menu, objective —
+       from the prompt of each episode. WOFOST, Cycles, and DSSAT all reach it as text, even though their dynamics
+       and interfaces differ, so one policy can train across all of them at once.</p>
+    <p>Each training instance is a triple <code>(Σ, P, R)</code> — the prompt-declared schema, the simulator
+       dynamics, and the matching reward — sampled from a mixed distribution; training maximizes the expected
+       return over that mixture:</p>
+    <div class="code plain">
+      <div class="code-head"><span>joint objective</span></div>
+<pre>J(θ) = E[ R(τ) ]     with   (Σ, P, R) ~ D_train ,   τ ~ π_θ( · | Σ )</pre>
+    </div>
+    <p>The dynamics <code>P</code> never enter the policy — only the prompt schema <code>Σ</code> does — so mixing
+       simulators is just mixing rows in the dataset. The Tier 3 <b>unified policy</b> trains this way across the
+       three simulators. In the paper it learns DSSAT and approaches its DSSAT specialist, while the per-simulator
+       specialists stay ahead on the WOFOST and Cycles profit targets (<a href="benchmark.html#findings">Benchmark</a>).</p>
+
+    <h2 id="levers">Training levers<a class="ah" href="#levers">#</a></h2>
+    <p>Two behaviors are specific to AgriManager. Everything else — the advantage estimator (GRPO by default,
+       stepwise GAE available), model backbone, epochs, and GPUs — is plain training config; see
+       <a href="configuration.html">Configuration</a>.</p>
+    <ul>
+      <li><b>Reward-variance filter</b> <span style="color:var(--text-soft)">(on by default)</span> — keeps only the
+        prompt groups with high in-group reward variance and skips uninformative batches (<a href="https://ragen-ai.github.io/" target="_blank" rel="noopener">RAGEN</a>-style), so updates
+        focus on rollouts that carry signal. Toggle with <code>trainer.rollout_filter.enable</code>. When every group
+        is filtered out for 5 consecutive steps (<code>max_consecutive_all_filtered_steps</code>), the run stops
+        early; its last checkpoint is its final policy.</li>
+      <li><b>Think / no-think</b> — in <em>think</em> mode the policy writes a short reasoning block in a
+        <code>&lt;tool_call&gt;</code> tag before its <code>&lt;answer&gt;</code>; in no-think mode it writes the
+        answer alone. Set per dataset with <code>env.require_think</code>. On the Qwen3-4B backbone, no-think
+        training often stalled near no-action where the reward penalizes input use, and several no-think runs stopped
+        early through the filter above. A single-seed Llama-3.2-3B pair reverses the think/no-think ordering, so treat
+        this as a property of the backbone tested.</li>
+    </ul>
+
+    <h2 id="paper-runs">Paper runs<a class="ah" href="#paper-runs">#</a></h2>
+    <p>Every paper run is a fixed script under <code>experiments/&lt;setting&gt;/</code>; running the script is the
+       experiment. Shared settings, set explicitly in the scripts:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Item</th><th>Value</th></tr>
+        <tr><td>Backbone</td><td><code>Qwen/Qwen3-4B-Instruct-2507</code></td></tr>
+        <tr><td>Algorithm</td><td>GRPO, no KL loss, actor learning rate 1e-6, 4 rollouts per prompt at temperature 1</td></tr>
+        <tr><td>Length</td><td>200 training steps; 400 for reward-formulation, 800 for the unified policy</td></tr>
+        <tr><td>Validation</td><td>before training and every 10 steps (monitoring only)</td></tr>
+        <tr><td>Checkpoint scored</td><td>the terminal one of each run (the stop step for a run that stopped early)</td></tr>
+        <tr><td>Seeds</td><td>three per arm; one seed sets <code>data.seed</code> and <code>actor_rollout_ref.actor.data_loader_seed</code>; the think and no-think arms of a replicate share it</td></tr>
+      </table>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Setting</th><th>Scripts (<code>experiments/…</code>)</th><th>Seeds</th></tr>
+        <tr><td>weather-regime</td><td><code>t1_1_weather_regime_shift/run_t11_{chickpea,potato}_{think,no_think}_r{2,3,4}_train.sh</code></td><td>51, 52, 53</td></tr>
+        <tr><td>crop-variety</td><td><code>t1_2_cross_crop_trait_shift/run_t12_{4,8,16}id_{think,no_think}_r{2,3,4}_train.sh</code></td><td>81, 82, 83</td></tr>
+        <tr><td>price-regime</td><td><code>t1_3_cycles_gym_price_regime/run_t13_price_{think,no_think}_r{1,2,3}_train.sh</code></td><td>110, 111, 112</td></tr>
+        <tr><td>observation-schema</td><td><code>t2_1_observation_schema_shift/run_t21_observation_{think,no_think}_r{2,3,4}_train.sh</code></td><td>61, 62, 63</td></tr>
+        <tr><td>action-menu</td><td><code>t2_2_action_menu_shift/run_t22_family_{a,b}_{think,no_think}_r{2,3,4}_train.sh</code></td><td>71, 72, 73</td></tr>
+        <tr><td>reward-formulation</td><td><code>t2_3_reward_formulation_shift/run_t23_{objectives,yield_only}_{think,no_think}_r{2,3,4}_train.sh</code></td><td>91, 92, 93</td></tr>
+        <tr><td>cross-simulator</td><td><code>t3_1_cross_simulator_maize_transfer/run_t31_{wofost,dssat,cycles}_{think,no_think}_r*_train.sh</code></td><td>71, 72, 73 (Cycles think: 71, 72, 74)</td></tr>
+        <tr><td>unified policy</td><td><code>t3_2_unified_prompt_conditioned_policy/run_t32_unified_qwen3_{think,no_think}_r{2,3,4}_train.sh</code></td><td>43, 44, 45</td></tr>
+      </table>
+    </div>
+    <p>The Cycles-source think run with seed 73 aborted on a vLLM FlashAttention-3 kernel fault before its first
+       checkpoint; its replacement (<code>r5</code>, seed 74) ran with FlashAttention 2, recorded in its script.</p>
+
+    <h2 id="nn">Neural-network baselines<a class="ah" href="#nn">#</a></h2>
+    <p><code>entrypoints/train/nn_train.sh --config-name nn</code> trains a Stable-Baselines3 policy on the numeric
+       observation, on a CPU. It is a fixed-interface baseline: its input layout and action head are fixed at
+       training time.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Key</th><th>Values</th></tr>
+        <tr><td><code>agent.type</code></td><td><code>PPO</code> (default), <code>MaskablePPO</code>, <code>A2C</code>, <code>DQN</code></td></tr>
+        <tr><td><code>agent.n_epochs</code></td><td><code>1</code>: one gradient pass per batch, the paper's main comparison (<code>n1</code>, same interaction budget as the language-model runs); <code>8</code>: appendix only (<code>n8</code>)</td></tr>
+        <tr><td><code>agent.seed</code></td><td>1, 2, 3</td></tr>
+      </table>
+    </div>
+
+    <div class="pagenav" id="pagenav"></div>
+  </main>
+
+  <aside class="toc" id="toc"></aside>
+</div>
+<script src="assets/app.js?v=20261025f"></script>
+</body>
+</html>
